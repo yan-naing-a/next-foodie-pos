@@ -1,9 +1,11 @@
 import CreateTable from "@/components/table/createTable";
-import { Box, Button } from "@mui/material";
+import { useAppSelector } from "@/store/hooks";
+import { Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
 
 const TablesPage = () => {
     const [open, setOpen] = useState<boolean>(false);
+    const tables = useAppSelector((state) => state.table.items);
 
     return (
         <Box sx={{ width: "100%" }}>
@@ -12,7 +14,13 @@ const TablesPage = () => {
                     create table
                 </Button>
             </Box>
-            <h1>Tables Page</h1>
+            <Box>
+                {tables.map((table) => (
+                    <Typography variant="h5" key={table.id}>
+                        {table.name}
+                    </Typography>
+                ))}
+            </Box>
             <CreateTable open={open} setOpen={setOpen} />
         </Box>
     );

@@ -1,9 +1,11 @@
 import CreateLocation from "@/components/location/createLocation";
-import { Box, Button } from "@mui/material";
+import { useAppSelector } from "@/store/hooks";
+import { Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
 
 const LocationsPage = () => {
     const [open, setOpen] = useState<boolean>(false);
+    const locations = useAppSelector((state) => state.location.items);
 
     return (
         <Box sx={{ width: "100%" }}>
@@ -12,7 +14,13 @@ const LocationsPage = () => {
                     create location
                 </Button>
             </Box>
-            <h1>Locations Page</h1>
+            <Box>
+                {locations.map((location) => (
+                    <Typography variant="h5" key={location.id}>
+                        {location.name}
+                    </Typography>
+                ))}
+            </Box>
             <CreateLocation open={open} setOpen={setOpen} />
         </Box>
     );

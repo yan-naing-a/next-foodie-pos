@@ -1,9 +1,11 @@
 import CreateMenuCategory from "@/components/menuCategory/createMenuCategory";
-import { Box, Button } from "@mui/material";
+import { useAppSelector } from "@/store/hooks";
+import { Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
 
 const MenuCategoriesPage = () => {
     const [open, setOpen] = useState<boolean>(false);
+    const menuCategories = useAppSelector((state) => state.menuCategory.items);
 
     return (
         <Box sx={{ width: "100%" }}>
@@ -12,7 +14,13 @@ const MenuCategoriesPage = () => {
                     create menu category
                 </Button>
             </Box>
-            <h1>Menu Categories Page</h1>
+            <Box>
+                {menuCategories.map((menuCategory) => (
+                    <Typography variant="h5" key={menuCategory.id}>
+                        {menuCategory.name}
+                    </Typography>
+                ))}
+            </Box>
             <CreateMenuCategory open={open} setOpen={setOpen} />
         </Box>
     );

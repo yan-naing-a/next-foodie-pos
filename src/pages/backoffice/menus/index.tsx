@@ -1,9 +1,11 @@
 import CreateMenu from "@/components/menu/createMenu";
-import { Box, Button } from "@mui/material";
+import { useAppSelector } from "@/store/hooks";
+import { Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
 
 const MenusPage = () => {
     const [open, setOpen] = useState<boolean>(false);
+    const menus = useAppSelector((state) => state.menu.items);
 
     return (
         <Box sx={{ width: "100%" }}>
@@ -12,7 +14,13 @@ const MenusPage = () => {
                     create menu
                 </Button>
             </Box>
-            <h1>Menus Page</h1>
+            <Box>
+                {menus.map((menu) => (
+                    <Typography variant="h5" key={menu.id}>
+                        {menu.name}
+                    </Typography>
+                ))}
+            </Box>
             <CreateMenu open={open} setOpen={setOpen} />
         </Box>
     );

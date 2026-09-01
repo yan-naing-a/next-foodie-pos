@@ -1,10 +1,10 @@
 import {
+    Box,
     Button,
     Dialog,
     DialogActions,
-    DialogContent,
-    DialogContentText,
     DialogTitle,
+    TextField
 } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 
@@ -27,13 +27,13 @@ const CreateLocation = ({ open, setOpen }: Props) => {
             aria-describedby="alert-dialog-description"
             role="alertdialog"
             disableRestoreFocus
+            sx={{ "& .MuiDialog-paper": { width: "100%", maxWidth: 400 } }}
         >
             <DialogTitle id="alert-dialog-title">Create Location</DialogTitle>
-            <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    Creating a location is awesome
-                </DialogContentText>
-            </DialogContent>
+            <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3, pl: 3, pr: 3 }}>
+                <TextField id="name-input" label="name" variant="outlined" />
+                <TextField id="address-input" label="address" variant="outlined" />
+            </Box>
             <DialogActions sx={{ padding: 3 }}>
                 <Button onClick={() => setOpen(false)} autoFocus>
                     Cancel
