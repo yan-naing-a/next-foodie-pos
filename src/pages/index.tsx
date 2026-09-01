@@ -1,6 +1,7 @@
 import Head from "next/head";
 
-import config from "@/utils/config";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchAppData } from "@/store/slices/appSlice";
 import { Box, Button } from "@mui/material";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -9,17 +10,12 @@ import { useEffect } from "react";
 export default function Home() {
   const { data: session } = useSession();
   const router = useRouter();
-  console.log(session);
+  const init = useAppSelector((state) => state.app.init);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    const response = await fetch(`${config.apiBaseUrl}/app`);
-    const data = await response.json();
-    console.log("data from server: ", data);
-  };
+    session && dispatch(fetchAppData());
+  }, [session]);
 
   if (!session) {
     return (

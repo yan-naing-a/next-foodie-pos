@@ -1,5 +1,6 @@
 import { MenuState } from "@/types/menu";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Menu } from "../../../generated/prisma/client";
 
 const initialState: MenuState = {
   items: [],
@@ -11,8 +12,8 @@ export const menuSlice = createSlice({
   name: "menu",
   initialState,
   reducers: {
-    setMenus: (state, action) => {
-      state = action.payload;
+    setMenus: (state, action: PayloadAction<Menu[]>) => {
+      state.items = action.payload;
     },
   },
 });
