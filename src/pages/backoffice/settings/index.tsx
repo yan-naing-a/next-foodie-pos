@@ -1,5 +1,92 @@
+import { useAppSelector } from "@/store/hooks";
+import {
+    Box,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    OutlinedInput,
+    Select,
+    Theme,
+    Typography,
+    useTheme,
+} from "@mui/material";
+import { useEffect, useState } from "react";
+import { Location } from "../../../../generated/prisma/client";
+
+function getStyles(name: string, value: string, theme: Theme) {
+    return {
+        fontWeight: value ? theme.typography.fontWeightMedium : theme.typography.fontWeightRegular,
+    };
+}
+
 const SettingsPage = () => {
-    return <h1>Settings Page</h1>;
+    const theme = useTheme();
+
+    const company = useAppSelector((state) => state.company.items);
+    const locations = useAppSelector((state) => state.location.items);
+    const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+
+    useEffect(() => {
+        if (!locations.length) {
+            setSelectedLocation(null);
+            return;
+        }
+
+        const storedLocationId = localStorage.getItem("selectedLocationId");
+        const storedLocation = storedLocationId
+            ? locations.find((location) => location.id === Number(storedLocationId))
+            : undefined;
+        const location = storedLocation ?? locations[0];
+
+        setSelectedLocation(location);
+        localStorage.setItem("selectedLocationId", String(location.id));
+    }, [locations]);
+
+    const handleChange = (value: number) => {
+        const currentLocation = locations.find((location) => location.id === value);
+        if (currentLocation) {
+            setSelectedLocation(currentLocation);
+            localStorage.setItem("selectedLocationId", String(value));
+        }
+    };
+
+    if (!company.length || !selectedLocation) return null;
+
+    return (
+        <Box>
+            <Box sx={{ mb: 10 }}>
+                <Typography variant="h4">{company[0].name}</Typography>
+            </Box>
+            <Box sx={{ width: 500 }}>
+                <Typography variant="h5" sx={{ mb: 2 }}>
+                    Select location
+                </Typography>
+                <div>
+                    <FormControl sx={{ width: "100%" }}>
+                        <InputLabel id="demo-multiple-name-label">location</InputLabel>
+                        <Select
+                            labelId="demo-multiple-name-label"
+                            id="demo-multiple-name"
+                            multiple={false}
+                            value={selectedLocation.id}
+                            onChange={(evt) => handleChange(Number(evt.target.value))}
+                            input={<OutlinedInput label="location" />}
+                        >
+                            {locations.map((location) => (
+                                <MenuItem
+                                    key={location.id}
+                                    value={location.id}
+                                    style={getStyles(location.name, selectedLocation.name, theme)}
+                                >
+                                    {location.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </div>
+            </Box>
+        </Box>
+    );
 };
 
 export default SettingsPage;

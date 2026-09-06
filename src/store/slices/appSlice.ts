@@ -32,7 +32,6 @@ export const fetchAppData = createAsyncThunk("app/fetchAppData", async (_, thunk
     addons,
   } = data;
 
-  console.log("menu is here: ", menus);
   thunkAPI.dispatch(setCompanies(companies));
   thunkAPI.dispatch(setLocations(locations));
   thunkAPI.dispatch(setTables(tables));

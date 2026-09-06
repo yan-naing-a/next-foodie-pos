@@ -11,7 +11,10 @@ interface BaseOption {
   onError?: (data?: any) => void;
 }
 
-export interface CreateLocationOption extends BaseOption {}
+export interface CreateLocationOption extends BaseOption {
+  name: string;
+  address: string;
+}
 
 export interface UpdateLocationOption extends BaseOption {
   id: number;

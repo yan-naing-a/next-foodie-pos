@@ -37,7 +37,7 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
             <DialogTitle id="alert-dialog-title">Create Addon Category</DialogTitle>
             <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3, pl: 3, pr: 3 }}>
                 <TextField id="name-input" label="name" variant="outlined" />
-                <SelectInput items={items} inputLabel="menu category" />
+                <SelectInput items={items} inputLabel="menu" />
                 <FormControlLabel control={<Switch />} label="Required" />
             </Box>
             <DialogActions sx={{ padding: 3 }}>
