@@ -6,17 +6,22 @@ import Select from "@mui/material/Select";
 import { Dispatch, SetStateAction } from "react";
 import { AddonCategory } from "../../../generated/prisma/client";
 
+interface SelectType {
+    id: number;
+    name: string;
+}
+
 interface Props {
     items: AddonCategory[];
     inputLabel: string;
-    value: AddonCategory | null;
-    setValue: Dispatch<SetStateAction<AddonCategory | null>>;
+    value: SelectType | null;
+    setValue: Dispatch<SetStateAction<SelectType | null>>;
 }
 
 const SingleSelectInput = ({ items, inputLabel, value, setValue }: Props) => {
     const handleChange = (eventValue: number) => {
-        const currentValue = items.find((item) => item.id === eventValue)!;
-        setValue(currentValue);
+        const selectedValue = items.find((item) => item.id === eventValue)!;
+        setValue(selectedValue);
     };
 
     return (
@@ -26,7 +31,7 @@ const SingleSelectInput = ({ items, inputLabel, value, setValue }: Props) => {
                 <Select
                     labelId="demo-name-label"
                     id="demo-name"
-                    value={value?.id}
+                    value={value?.id || ""}
                     label={inputLabel}
                     onChange={(evt) => handleChange(evt.target.value)}
                     input={<OutlinedInput label={inputLabel} />}

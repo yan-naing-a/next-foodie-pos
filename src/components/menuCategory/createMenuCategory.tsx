@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createMenuCategory } from "@/store/slices/menuCategorySlice";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { default as MultipleSelectInput } from "../selectInput/MultiSelectInput";
 
 interface Props {
@@ -16,18 +16,12 @@ interface SelectType {
 
 const CreateMenuCategory = ({ open, setOpen }: Props) => {
     const [name, setName] = useState<string>("");
-    const [selectedMenus, setSelectedMenus] = useState<SelectType[] | null>(null);
+    const [selectedMenus, setSelectedMenus] = useState<SelectType[] | null>([]);
     const menus = useAppSelector((state) => state.menu.items);
     const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        if (menus.length) {
-            const { id, name } = menus[0];
-            setSelectedMenus([{ id, name }]);
-        }
-    }, [menus]);
-
     const onSuccess = () => {
+        setSelectedMenus([]);
         setOpen(false);
     };
 
@@ -36,14 +30,8 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
             console.log("Field required!");
             return;
         }
-        const selectedMenuIds = selectedMenus.map((selectedMenu) => selectedMenu.id);
-        dispatch(
-            createMenuCategory({
-                name,
-                menuIds: selectedMenuIds,
-                onSuccess,
-            }),
-        );
+        const menuIds = selectedMenus.map((selectedMenu) => selectedMenu.id);
+        dispatch(createMenuCategory({ name, menuIds, onSuccess }));
     };
 
     if (!menus.length) return;

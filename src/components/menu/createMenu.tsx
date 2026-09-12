@@ -9,7 +9,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import MultipleSelectInput from "../selectInput/MultiSelectInput";
 
 interface Props {
@@ -24,21 +24,20 @@ interface SelectType {
 
 const CreateMenu = ({ open, setOpen }: Props) => {
     const [name, setName] = useState<string>("");
+    const [price, setPrice] = useState<number>(0);
     const [description, setDescription] = useState<string>("");
     const [assetUrl, setAssetUrl] = useState<string>("");
-    const [selectedMenuCategories, setSelectedMenuCategories] = useState<SelectType[] | null>(null);
-    const [price, setPrice] = useState<number>(0);
+    // select menu category
+    const [selectedMenuCategories, setSelectedMenuCategories] = useState<SelectType[] | null>([]);
     const menuCategories = useAppSelector((state) => state.menuCategory.items);
+    // select addon category
+    const [selectedAddonCategories, setSelectedAddonCategories] = useState<SelectType[] | null>([]);
+    const addonCategories = useAppSelector((state) => state.addonCategory.items);
     const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        if (menuCategories.length) {
-            const { id, name } = menuCategories[0];
-            setSelectedMenuCategories([{ id, name }]);
-        }
-    }, [menuCategories]);
-
     const onSuccess = () => {
+        setSelectedMenuCategories([]);
+        setSelectedAddonCategories([]);
         setOpen(false);
     };
 
@@ -47,19 +46,24 @@ const CreateMenu = ({ open, setOpen }: Props) => {
             console.log("Field required!");
             return;
         }
-        const selectedMenuCategoryIds = selectedMenuCategories.map(
-            (selectedMenuCategory) => selectedMenuCategory.id,
-        );
-        dispatch(
-            createMenu({
+        const menuCategoryIds = selectedMenuCategories.map((MenuCategory) => MenuCategory.id);
+
+        if (selectedAddonCategories?.length) {
+            const addonCategoryIds = selectedAddonCategories.map((addonCategory) => addonCategory.id);
+            const menuData = {
                 name,
                 price,
                 description,
                 assetUrl,
-                menuCategoryIds: selectedMenuCategoryIds,
+                menuCategoryIds,
+                addonCategoryIds,
                 onSuccess,
-            }),
-        );
+            };
+            dispatch(createMenu(menuData));
+            return;
+        } else {
+            dispatch(createMenu({ name, price, description, assetUrl, menuCategoryIds, onSuccess }));
+        }
     };
 
     if (!menuCategories.length) return;
@@ -97,11 +101,19 @@ const CreateMenu = ({ open, setOpen }: Props) => {
                     onChange={(evt) => setDescription(evt.target.value)}
                 />
                 <Typography variant="body1">There must be image upload</Typography>
+                {/* menu category */}
                 <MultipleSelectInput
                     items={menuCategories}
                     inputLabel="menu categories"
                     values={selectedMenuCategories}
                     setValues={setSelectedMenuCategories}
+                />
+                {/* addon category */}
+                <MultipleSelectInput
+                    items={addonCategories}
+                    inputLabel="addon categories"
+                    values={selectedAddonCategories}
+                    setValues={setSelectedAddonCategories}
                 />
             </Box>
             <DialogActions sx={{ padding: 3 }}>

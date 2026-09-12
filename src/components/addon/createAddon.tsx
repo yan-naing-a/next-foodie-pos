@@ -1,8 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createAddon } from "@/store/slices/addonSlice";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { AddonCategory } from "../../../generated/prisma/client";
+import { Dispatch, SetStateAction, useState } from "react";
 import SingleSelectInput from "../selectInput/SingleSelectInput";
 
 interface Props {
@@ -10,18 +9,22 @@ interface Props {
     setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
+interface SelectType {
+    id: number;
+    name: string;
+}
+
 const CreateAddon = ({ open, setOpen }: Props) => {
     const [name, setName] = useState<string | null>(null);
     const [price, setPrice] = useState<number>(0);
-    const [selectedAddonCategory, setSelectedAddonCategory] = useState<AddonCategory | null>(null);
+    const [selectedAddonCategory, setSelectedAddonCategory] = useState<SelectType | null>(null);
     const addonCategories = useAppSelector((state) => state.addonCategory.items);
     const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        if (addonCategories) setSelectedAddonCategory(addonCategories[0]);
-    }, [addonCategories]);
-
-    const onSuccess = () => setOpen(false);
+    const onSuccess = () => {
+        setSelectedAddonCategory(null);
+        setOpen(false);
+    };
 
     const handleCreateAddon = () => {
         if (!name || !price || !selectedAddonCategory) {

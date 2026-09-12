@@ -10,7 +10,7 @@ import {
     Switch,
     TextField,
 } from "@mui/material";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import MultiSelectInput from "../selectInput/MultiSelectInput";
 
 interface Props {
@@ -25,19 +25,13 @@ interface SelectType {
 
 const CreateAddonCategory = ({ open, setOpen }: Props) => {
     const [name, setName] = useState<string | null>(null);
-    const [selectedMenus, setSelectedMenus] = useState<SelectType[] | null>(null);
+    const [selectedMenus, setSelectedMenus] = useState<SelectType[] | null>([]);
     const [isRequired, setIsRequired] = useState<boolean>(false);
     const menus = useAppSelector((state) => state.menu.items);
     const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        if (menus.length) {
-            const { id, name } = menus[0];
-            setSelectedMenus([{ id, name }]);
-        }
-    }, [menus]);
-
     const onSuccess = () => {
+        setSelectedMenus([]);
         setOpen(false);
     };
 
@@ -46,8 +40,8 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
             console.log("Field required!");
             return;
         }
-        const selectedMenuIds = selectedMenus.map((selectedMenu) => selectedMenu.id);
-        dispatch(createAddonCategory({ name, menuIds: selectedMenuIds, isRequired, onSuccess }));
+        const menuIds = selectedMenus.map((selectedMenu) => selectedMenu.id);
+        dispatch(createAddonCategory({ name, menuIds, isRequired, onSuccess }));
     };
 
     if (!menus.length) return;

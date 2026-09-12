@@ -5,17 +5,3 @@ export interface CompanyState {
   loading: boolean;
   error: Error | null;
 }
-
-interface BaseOption {
-  onSuccess?: (data?: any) => void;
-  onError?: (data?: any) => void;
-}
-
-export interface CreateCompanyOption extends BaseOption {}
-
-export interface UpdateCompanyOption extends BaseOption {
-  id: number;
-}
-export interface DeleteCompanyOption extends BaseOption {
-  id: number;
-}

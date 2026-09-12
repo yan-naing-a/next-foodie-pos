@@ -2,6 +2,7 @@ import { CreateMenuOption, MenuState } from "@/types/menu";
 import config from "@/utils/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Menu } from "../../../generated/prisma/client";
+import { addMenuAddonCategories } from "./menuAddonCategorySlice";
 import { addMenuCategoryMenus } from "./menuCategoryMenuSlice";
 
 const initialState: MenuState = {
@@ -13,19 +14,39 @@ const initialState: MenuState = {
 export const createMenu = createAsyncThunk(
   "menu/createMenu",
   async (payload: CreateMenuOption, thunkAPI) => {
-    const { name, price, description, assetUrl, menuCategoryIds, onSuccess, onError } = payload;
+    const {
+      name,
+      price,
+      description,
+      assetUrl,
+      menuCategoryIds,
+      addonCategoryIds,
+      onSuccess,
+      onError,
+    } = payload;
+
     try {
       const response = await fetch(`${config.apiBaseUrl}/menu`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, price, description, assetUrl, menuCategoryIds }),
+        body: JSON.stringify({
+          name,
+          price,
+          description,
+          assetUrl,
+          menuCategoryIds,
+          addonCategoryIds,
+        }),
       });
       const { msg, data } = await response.json();
-      const { menu, menuCategoryMenus } = data;
+      const { menu, menuCategoryMenus, menuAddonCategories } = data;
       thunkAPI.dispatch(addMenu(menu));
       thunkAPI.dispatch(addMenuCategoryMenus(menuCategoryMenus));
+      if (menuAddonCategories.length) {
+        thunkAPI.dispatch(addMenuAddonCategories(menuAddonCategories));
+      }
       onSuccess && onSuccess();
     } catch (err) {
       onError && onError(err);

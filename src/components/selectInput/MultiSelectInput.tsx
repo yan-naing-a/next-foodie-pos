@@ -5,16 +5,21 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
 import { Theme, useTheme } from "@mui/material/styles";
 import { Dispatch, SetStateAction } from "react";
-import { Menu, MenuCategory } from "../../../generated/prisma/client";
+import { AddonCategory, Menu, MenuCategory } from "../../../generated/prisma/client";
 
-interface Props {
-    items: Menu[] | MenuCategory[];
-    inputLabel: string;
-    values: { id: number; name: string }[] | null;
-    setValues: Dispatch<SetStateAction<{ id: number; name: string }[] | null>>;
+interface SelectType {
+    id: number;
+    name: string;
 }
 
-function getStyles(valueId: number, values: { id: number; name: string }[], theme: Theme) {
+interface Props {
+    items: Menu[] | MenuCategory[] | AddonCategory[];
+    inputLabel: string;
+    values: SelectType[] | null;
+    setValues: Dispatch<SetStateAction<SelectType[] | null>>;
+}
+
+function getStyles(valueId: number, values: SelectType[], theme: Theme) {
     return {
         fontWeight: values.map((v) => v.id).includes(valueId)
             ? theme.typography.fontWeightMedium
@@ -44,7 +49,7 @@ export default function MultipleSelectInput({ items, inputLabel, values, setValu
                     labelId="demo-multiple-name-label"
                     id="demo-multiple-name"
                     multiple
-                    value={!!values && values.map((value) => value.id)}
+                    value={!!values?.length ? values.map((value) => value.id) : []}
                     label={inputLabel}
                     onChange={(evt) => handleChange(evt.target.value as number[])}
                     input={<OutlinedInput label={inputLabel} />}
