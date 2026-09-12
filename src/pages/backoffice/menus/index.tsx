@@ -1,6 +1,8 @@
+import ItemCard from "@/components/ItemCard";
 import CreateMenu from "@/components/menu/createMenu";
 import { useAppSelector } from "@/store/hooks";
-import { Box, Button, Typography } from "@mui/material";
+import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
+import { Box, Button } from "@mui/material";
 import { useState } from "react";
 
 const MenusPage = () => {
@@ -14,11 +16,14 @@ const MenusPage = () => {
                     create menu
                 </Button>
             </Box>
-            <Box>
+            <Box sx={{ display: "flex", flexWrap: "wrap", mt: 5, gap: 4 }}>
                 {menus.map((menu) => (
-                    <Typography variant="h5" key={menu.id}>
-                        {menu.name}
-                    </Typography>
+                    <ItemCard
+                        key={menu.id}
+                        icon={<RestaurantMenuIcon sx={{ fontSize: 40 }} />}
+                        title={menu.name}
+                        assetUrl={menu.assetUrl}
+                    />
                 ))}
             </Box>
             <CreateMenu open={open} setOpen={setOpen} />

@@ -7,9 +7,10 @@ interface Props {
     title: string;
     href?: string;
     subtitle?: string;
+    assetUrl?: string | null;
 }
 
-const ItemCard = ({ icon, title, href, subtitle }: Props) => {
+const ItemCard = ({ icon, title, href, subtitle, assetUrl }: Props) => {
     if (href) {
         return (
             <Link href={href} style={{ textDecoration: "none", color: "#000000" }}>
@@ -26,7 +27,7 @@ const ItemCard = ({ icon, title, href, subtitle }: Props) => {
                         m: 2,
                     }}
                 >
-                    <Box>{icon}</Box>
+                    <Box>{!!assetUrl ? <img src={assetUrl} alt={title} /> : icon}</Box>
                     <Typography sx={{ color: "#4C4C6D", fontWeight: "700" }}>{title}</Typography>
                     {subtitle && <Typography sx={{ color: "#4C4C6D", fontSize: 14 }}>{subtitle}</Typography>}
                 </Paper>

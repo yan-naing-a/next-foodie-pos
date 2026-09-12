@@ -1,6 +1,8 @@
+import ItemCard from "@/components/ItemCard";
 import CreateMenuCategory from "@/components/menuCategory/createMenuCategory";
 import { useAppSelector } from "@/store/hooks";
-import { Box, Button, Typography } from "@mui/material";
+import CategoryIcon from "@mui/icons-material/Category";
+import { Box, Button } from "@mui/material";
 import { useState } from "react";
 
 const MenuCategoriesPage = () => {
@@ -14,11 +16,13 @@ const MenuCategoriesPage = () => {
                     create menu category
                 </Button>
             </Box>
-            <Box>
+            <Box sx={{ display: "flex", flexWrap: "wrap", mt: 5, gap: 4 }}>
                 {menuCategories.map((menuCategory) => (
-                    <Typography variant="h5" key={menuCategory.id}>
-                        {menuCategory.name}
-                    </Typography>
+                    <ItemCard
+                        key={menuCategory.id}
+                        icon={<CategoryIcon sx={{ fontSize: 40 }} />}
+                        title={menuCategory.name}
+                    />
                 ))}
             </Box>
             <CreateMenuCategory open={open} setOpen={setOpen} />

@@ -1,18 +1,31 @@
+import { useAppDispatch } from "@/store/hooks";
+import { createTable } from "@/store/slices/tableSlice";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
-import SelectInput from "../SelectInput";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface Props {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const items = ["location 1", "location 2", "location 3", "location 4", "location 5"];
-
 const CreateTable = ({ open, setOpen }: Props) => {
+    const [name, setName] = useState<string>("");
+    const [selectedLocationId, setSelectedLocationId] = useState<string>("");
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        const storeLocationId = localStorage.getItem("selectedLocationId");
+        storeLocationId && setSelectedLocationId(storeLocationId);
+    }, []);
+
+    const onSuccess = () => setOpen(false);
+
     const handleCreateTable = () => {
-        console.log("Created a table");
-        setOpen(false);
+        if (!name || !selectedLocationId) {
+            console.log("Fields are required");
+            return;
+        }
+        dispatch(createTable({ name, locationId: Number(selectedLocationId), onSuccess }));
     };
 
     return (
@@ -27,8 +40,12 @@ const CreateTable = ({ open, setOpen }: Props) => {
         >
             <DialogTitle id="alert-dialog-title">Create Table</DialogTitle>
             <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3, pl: 3, pr: 3 }}>
-                <TextField id="name-input" label="name" variant="outlined" />
-                <SelectInput items={items} inputLabel="menu" multiple={false} />
+                <TextField
+                    id="name-input"
+                    label="name"
+                    variant="outlined"
+                    onChange={(evt) => setName(evt.target.value)}
+                />
             </Box>
             <DialogActions sx={{ padding: 3 }}>
                 <Button onClick={() => setOpen(false)} autoFocus>

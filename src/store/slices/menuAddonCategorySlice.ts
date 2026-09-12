@@ -15,10 +15,13 @@ export const menuAddonCategorySlice = createSlice({
     setMenuAddonCategories: (state, action: PayloadAction<MenuAddonCategory[]>) => {
       state.items = action.payload;
     },
+    addMenuAddonCategories: (state, action: PayloadAction<MenuAddonCategory[]>) => {
+      state.items = [...state.items, ...action.payload];
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setMenuAddonCategories } = menuAddonCategorySlice.actions;
+export const { setMenuAddonCategories, addMenuAddonCategories } = menuAddonCategorySlice.actions;
 
 export default menuAddonCategorySlice.reducer;

@@ -11,7 +11,10 @@ interface BaseOption {
   onError?: (data?: any) => void;
 }
 
-export interface CreateMenuCategoryOption extends BaseOption {}
+export interface CreateMenuCategoryOption extends BaseOption {
+  name: string;
+  menuIds: number[];
+}
 
 export interface UpdateMenuCategoryOption extends BaseOption {
   id: number;

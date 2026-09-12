@@ -1,6 +1,8 @@
+import ItemCard from "@/components/ItemCard";
 import CreateTable from "@/components/table/createTable";
 import { useAppSelector } from "@/store/hooks";
-import { Box, Button, Typography } from "@mui/material";
+import TableBarIcon from "@mui/icons-material/TableBar";
+import { Box, Button } from "@mui/material";
 import { useState } from "react";
 
 const TablesPage = () => {
@@ -14,11 +16,13 @@ const TablesPage = () => {
                     create table
                 </Button>
             </Box>
-            <Box>
+            <Box sx={{ display: "flex", flexWrap: "wrap", mt: 5, gap: 4 }}>
                 {tables.map((table) => (
-                    <Typography variant="h5" key={table.id}>
-                        {table.name}
-                    </Typography>
+                    <ItemCard
+                        key={table.id}
+                        icon={<TableBarIcon sx={{ fontSize: 40 }} />}
+                        title={table.name}
+                    />
                 ))}
             </Box>
             <CreateTable open={open} setOpen={setOpen} />

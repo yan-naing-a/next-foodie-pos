@@ -11,7 +11,10 @@ interface BaseOption {
   onError?: (data?: any) => void;
 }
 
-export interface CreateTableOption extends BaseOption {}
+export interface CreateTableOption extends BaseOption {
+  name: string;
+  locationId: number;
+}
 
 export interface UpdateTableOption extends BaseOption {
   id: number;

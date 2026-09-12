@@ -18,7 +18,11 @@ const LocationsPage = () => {
             </Box>
             <Box sx={{ display: "flex", flexWrap: "wrap", mt: 5, gap: 4 }}>
                 {locations.map((location) => (
-                    <ItemCard key={location.id} icon={<LocationOnIcon />} title={location.name} />
+                    <ItemCard
+                        key={location.id}
+                        icon={<LocationOnIcon sx={{ fontSize: 40 }} />}
+                        title={location.name}
+                    />
                 ))}
             </Box>
             <CreateLocation open={open} setOpen={setOpen} />

@@ -11,7 +11,11 @@ interface BaseOption {
   onError?: (data?: any) => void;
 }
 
-export interface CreateAddonOption extends BaseOption {}
+export interface CreateAddonOption extends BaseOption {
+  name: string;
+  price: number;
+  addonCategoryId: number;
+}
 
 export interface UpdateAddonOption extends BaseOption {
   id: number;

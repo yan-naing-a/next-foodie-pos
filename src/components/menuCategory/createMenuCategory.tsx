@@ -1,26 +1,52 @@
-import {
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogTitle,
-    TextField
-} from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
-import SelectInput from "../SelectInput";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { createMenuCategory } from "@/store/slices/menuCategorySlice";
+import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { default as MultipleSelectInput } from "../selectInput/MultiSelectInput";
 
 interface Props {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const items = ["Menu 1", "Menu 2", "Menu 3", "Menu 4", "Menu 5"];
+interface SelectType {
+    id: number;
+    name: string;
+}
 
 const CreateMenuCategory = ({ open, setOpen }: Props) => {
-    const handleCreateMenuCategory = () => {
-        console.log("Created a menu category");
+    const [name, setName] = useState<string>("");
+    const [selectedMenus, setSelectedMenus] = useState<SelectType[] | null>(null);
+    const menus = useAppSelector((state) => state.menu.items);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (menus.length) {
+            const { id, name } = menus[0];
+            setSelectedMenus([{ id, name }]);
+        }
+    }, [menus]);
+
+    const onSuccess = () => {
         setOpen(false);
     };
+
+    const handleCreateMenuCategory = () => {
+        if (!name || !selectedMenus?.length) {
+            console.log("Field required!");
+            return;
+        }
+        const selectedMenuIds = selectedMenus.map((selectedMenu) => selectedMenu.id);
+        dispatch(
+            createMenuCategory({
+                name,
+                menuIds: selectedMenuIds,
+                onSuccess,
+            }),
+        );
+    };
+
+    if (!menus.length) return;
 
     return (
         <Dialog
@@ -34,8 +60,18 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
         >
             <DialogTitle id="alert-dialog-title">Create Menu Category</DialogTitle>
             <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3, pl: 3, pr: 3 }}>
-                <TextField id="name-input" label="name" variant="outlined" />
-                <SelectInput items={items} inputLabel="menu" />
+                <TextField
+                    id="name-input"
+                    label="name"
+                    variant="outlined"
+                    onChange={(evt) => setName(evt.target.value)}
+                />
+                <MultipleSelectInput
+                    items={menus}
+                    inputLabel="menus"
+                    values={selectedMenus}
+                    setValues={setSelectedMenus}
+                />
             </Box>
             <DialogActions sx={{ padding: 3 }}>
                 <Button onClick={() => setOpen(false)} autoFocus>

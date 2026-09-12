@@ -1,6 +1,8 @@
 import CreateAddon from "@/components/addon/createAddon";
+import ItemCard from "@/components/ItemCard";
 import { useAppSelector } from "@/store/hooks";
-import { Box, Button, Typography } from "@mui/material";
+import EggIcon from "@mui/icons-material/Egg";
+import { Box, Button } from "@mui/material";
 import { useState } from "react";
 
 const AddonsPage = () => {
@@ -14,11 +16,9 @@ const AddonsPage = () => {
                     create addon
                 </Button>
             </Box>
-            <Box>
+            <Box sx={{ display: "flex", flexWrap: "wrap", mt: 5, gap: 4 }}>
                 {addons.map((addon) => (
-                    <Typography variant="h5" key={addon.id}>
-                        {addon.name}
-                    </Typography>
+                    <ItemCard key={addon.id} icon={<EggIcon sx={{ fontSize: 40 }} />} title={addon.name} />
                 ))}
             </Box>
             <CreateAddon open={open} setOpen={setOpen} />

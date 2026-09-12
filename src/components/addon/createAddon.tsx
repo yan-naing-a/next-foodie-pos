@@ -1,25 +1,39 @@
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { createAddon } from "@/store/slices/addonSlice";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
-import SelectInput from "../SelectInput";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { AddonCategory } from "../../../generated/prisma/client";
+import SingleSelectInput from "../selectInput/SingleSelectInput";
 
 interface Props {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const items = [
-    "addon category 1",
-    "addon category 2",
-    "addon category 3",
-    "addon category 4",
-    "addon category 5",
-];
-
 const CreateAddon = ({ open, setOpen }: Props) => {
+    const [name, setName] = useState<string | null>(null);
+    const [price, setPrice] = useState<number>(0);
+    const [selectedAddonCategory, setSelectedAddonCategory] = useState<AddonCategory | null>(null);
+    const addonCategories = useAppSelector((state) => state.addonCategory.items);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (addonCategories) setSelectedAddonCategory(addonCategories[0]);
+    }, [addonCategories]);
+
+    const onSuccess = () => setOpen(false);
+
     const handleCreateAddon = () => {
-        console.log("Created an addon");
-        setOpen(false);
+        if (!name || !price || !selectedAddonCategory) {
+            console.log("Fields are required");
+            return;
+        }
+        const addonCategoryId = selectedAddonCategory.id;
+
+        dispatch(createAddon({ name, price, addonCategoryId, onSuccess }));
     };
+
+    if (!addonCategories.length) return;
 
     return (
         <Dialog
@@ -33,9 +47,25 @@ const CreateAddon = ({ open, setOpen }: Props) => {
         >
             <DialogTitle id="alert-dialog-title">Create Addon</DialogTitle>
             <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3, pl: 3, pr: 3 }}>
-                <TextField id="name-input" label="name" variant="outlined" />
-                <TextField id="price-input" label="price" variant="outlined" type="number" />
-                <SelectInput items={items} inputLabel="menu" multiple={false} />
+                <TextField
+                    id="name-input"
+                    label="name"
+                    variant="outlined"
+                    onChange={(evt) => setName(evt.target.value)}
+                />
+                <TextField
+                    id="price-input"
+                    label="price"
+                    variant="outlined"
+                    type="number"
+                    onChange={(evt) => setPrice(Number(evt.target.value))}
+                />
+                <SingleSelectInput
+                    items={addonCategories}
+                    inputLabel="addon category"
+                    value={selectedAddonCategory}
+                    setValue={setSelectedAddonCategory}
+                />
             </Box>
             <DialogActions sx={{ padding: 3 }}>
                 <Button onClick={() => setOpen(false)} autoFocus>

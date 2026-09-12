@@ -12,7 +12,11 @@ interface BaseOption {
 }
 
 export interface CreateMenuOption extends BaseOption {
-  id: number;
+  name: string;
+  price: number;
+  description?: string;
+  assetUrl?: string;
+  menuCategoryIds: number[];
 }
 export interface UpdateMenuOption extends BaseOption {
   id: number;
