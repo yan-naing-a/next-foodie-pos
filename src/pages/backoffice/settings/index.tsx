@@ -1,3 +1,4 @@
+import DarkModeSwitch from "@/components/DarkModeSwitch";
 import { useAppSelector } from "@/store/hooks";
 import {
     Box,
@@ -8,7 +9,7 @@ import {
     Select,
     Theme,
     Typography,
-    useTheme,
+    useTheme
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Location } from "../../../../generated/prisma/client";
@@ -53,8 +54,8 @@ const SettingsPage = () => {
     if (!company.length || !selectedLocation) return null;
 
     return (
-        <Box>
-            <Box sx={{ mb: 10 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 5 }}>
+            <Box>
                 <Typography variant="h4">{company[0].name}</Typography>
             </Box>
             <Box sx={{ width: 500 }}>
@@ -84,6 +85,12 @@ const SettingsPage = () => {
                         </Select>
                     </FormControl>
                 </div>
+            </Box>
+            <Box>
+                <Typography variant="h5" sx={{ mb: 2 }}>
+                    Dark mode
+                </Typography>
+                <DarkModeSwitch />
             </Box>
         </Box>
     );
