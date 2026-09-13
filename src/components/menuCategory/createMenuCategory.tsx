@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createMenuCategory } from "@/store/slices/menuCategorySlice";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
+import InputErrorMessage from "../InputErrorMessage";
 import { default as MultipleSelectInput } from "../selectInput/MultiSelectInput";
 
 interface Props {
@@ -17,17 +18,26 @@ interface SelectType {
 const CreateMenuCategory = ({ open, setOpen }: Props) => {
     const [name, setName] = useState<string>("");
     const [selectedMenus, setSelectedMenus] = useState<SelectType[] | null>([]);
+    const [errorMessage, setErrorMessage] = useState<string[]>([]);
     const menus = useAppSelector((state) => state.menu.items);
     const dispatch = useAppDispatch();
 
-    const onSuccess = () => {
+    const clearInput = () => {
+        setName("");
         setSelectedMenus([]);
+    };
+
+    const onSuccess = () => {
+        clearInput();
         setOpen(false);
     };
 
     const handleCreateMenuCategory = () => {
         if (!name || !selectedMenus?.length) {
-            console.log("Field required!");
+            setErrorMessage([]);
+            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
+            !selectedMenus?.length &&
+                setErrorMessage((prevState) => [...prevState, "menus field required"]);
             return;
         }
         const menuIds = selectedMenus.map((selectedMenu) => selectedMenu.id);
@@ -39,7 +49,11 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
     return (
         <Dialog
             open={open}
-            onClose={() => setOpen(false)}
+            onClose={() => {
+                clearInput();
+                setErrorMessage([]);
+                setOpen(false);
+            }}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -60,9 +74,17 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
                     values={selectedMenus}
                     setValues={setSelectedMenus}
                 />
+                {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button onClick={() => setOpen(false)} autoFocus>
+                <Button
+                    onClick={() => {
+                        clearInput();
+                        setErrorMessage([]);
+                        setOpen(false);
+                    }}
+                    autoFocus
+                >
                     Cancel
                 </Button>
                 <Button onClick={handleCreateMenuCategory} variant="contained">

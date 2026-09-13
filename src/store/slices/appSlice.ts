@@ -32,6 +32,7 @@ export const fetchAppData = createAsyncThunk("app/fetchAppData", async (_, thunk
     addons,
   } = data;
 
+  thunkAPI.dispatch(setInit(true));
   thunkAPI.dispatch(setCompanies(companies));
   thunkAPI.dispatch(setLocations(locations));
   thunkAPI.dispatch(setTables(tables));
@@ -41,7 +42,6 @@ export const fetchAppData = createAsyncThunk("app/fetchAppData", async (_, thunk
   thunkAPI.dispatch(setAddonCategories(addonCategories));
   thunkAPI.dispatch(setMenuAddonCategories(menuAddonCategories));
   thunkAPI.dispatch(setAddons(addons));
-  thunkAPI.dispatch(setInit(true));
 });
 
 export const appSlice = createSlice({

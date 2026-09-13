@@ -2,6 +2,7 @@ import { useAppDispatch } from "@/store/hooks";
 import { createTable } from "@/store/slices/tableSlice";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import InputErrorMessage from "../InputErrorMessage";
 
 interface Props {
     open: boolean;
@@ -11,6 +12,7 @@ interface Props {
 const CreateTable = ({ open, setOpen }: Props) => {
     const [name, setName] = useState<string>("");
     const [selectedLocationId, setSelectedLocationId] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string[]>([]);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -18,11 +20,22 @@ const CreateTable = ({ open, setOpen }: Props) => {
         storeLocationId && setSelectedLocationId(storeLocationId);
     }, []);
 
-    const onSuccess = () => setOpen(false);
+    const clearInput = () => {
+        setName("");
+        setSelectedLocationId("");
+    };
+
+    const onSuccess = () => {
+        clearInput();
+        setOpen(false);
+    };
 
     const handleCreateTable = () => {
         if (!name || !selectedLocationId) {
-            console.log("Fields are required");
+            setErrorMessage([]);
+            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
+            !selectedLocationId &&
+                setErrorMessage((prevState) => [...prevState, "select location on setting first"]);
             return;
         }
         dispatch(createTable({ name, locationId: Number(selectedLocationId), onSuccess }));
@@ -31,7 +44,11 @@ const CreateTable = ({ open, setOpen }: Props) => {
     return (
         <Dialog
             open={open}
-            onClose={() => setOpen(false)}
+            onClose={() => {
+                clearInput();
+                setErrorMessage([]);
+                setOpen(false);
+            }}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -46,9 +63,17 @@ const CreateTable = ({ open, setOpen }: Props) => {
                     variant="outlined"
                     onChange={(evt) => setName(evt.target.value)}
                 />
+                {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button onClick={() => setOpen(false)} autoFocus>
+                <Button
+                    onClick={() => {
+                        clearInput();
+                        setErrorMessage([]);
+                        setOpen(false);
+                    }}
+                    autoFocus
+                >
                     Cancel
                 </Button>
                 <Button onClick={handleCreateTable} variant="contained">

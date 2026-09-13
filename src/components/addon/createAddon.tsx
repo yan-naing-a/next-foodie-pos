@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createAddon } from "@/store/slices/addonSlice";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
+import InputErrorMessage from "../InputErrorMessage";
 import SingleSelectInput from "../selectInput/SingleSelectInput";
 
 interface Props {
@@ -15,20 +16,31 @@ interface SelectType {
 }
 
 const CreateAddon = ({ open, setOpen }: Props) => {
-    const [name, setName] = useState<string | null>(null);
-    const [price, setPrice] = useState<number>(0);
+    const [name, setName] = useState<string>("");
+    const [price, setPrice] = useState<number>();
     const [selectedAddonCategory, setSelectedAddonCategory] = useState<SelectType | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string[]>([]);
     const addonCategories = useAppSelector((state) => state.addonCategory.items);
     const dispatch = useAppDispatch();
 
-    const onSuccess = () => {
+    const clearInput = () => {
+        setName("");
+        setPrice(undefined);
         setSelectedAddonCategory(null);
+    };
+
+    const onSuccess = () => {
+        clearInput();
         setOpen(false);
     };
 
     const handleCreateAddon = () => {
-        if (!name || !price || !selectedAddonCategory) {
-            console.log("Fields are required");
+        if (!name || price == undefined || !selectedAddonCategory) {
+            setErrorMessage([]);
+            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
+            price == undefined && setErrorMessage((prevState) => [...prevState, "invalid price field"]);
+            !selectedAddonCategory &&
+                setErrorMessage((prevState) => [...prevState, "addon category field required"]);
             return;
         }
         const addonCategoryId = selectedAddonCategory.id;
@@ -41,7 +53,11 @@ const CreateAddon = ({ open, setOpen }: Props) => {
     return (
         <Dialog
             open={open}
-            onClose={() => setOpen(false)}
+            onClose={() => {
+                clearInput();
+                setErrorMessage([]);
+                setOpen(false);
+            }}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -54,13 +70,16 @@ const CreateAddon = ({ open, setOpen }: Props) => {
                     id="name-input"
                     label="name"
                     variant="outlined"
-                    onChange={(evt) => setName(evt.target.value)}
+                    onChange={(evt) => {
+                        setName(evt.target.value);
+                    }}
                 />
                 <TextField
                     id="price-input"
                     label="price"
                     variant="outlined"
                     type="number"
+                    slotProps={{ htmlInput: { min: 0 } }}
                     onChange={(evt) => setPrice(Number(evt.target.value))}
                 />
                 <SingleSelectInput
@@ -69,9 +88,16 @@ const CreateAddon = ({ open, setOpen }: Props) => {
                     value={selectedAddonCategory}
                     setValue={setSelectedAddonCategory}
                 />
+                {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button onClick={() => setOpen(false)} autoFocus>
+                <Button
+                    onClick={() => {
+                        clearInput();
+                        setOpen(false);
+                    }}
+                    autoFocus
+                >
                     Cancel
                 </Button>
                 <Button onClick={handleCreateAddon} variant="contained">

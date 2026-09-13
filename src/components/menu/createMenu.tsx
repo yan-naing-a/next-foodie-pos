@@ -10,6 +10,7 @@ import {
     Typography,
 } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
+import InputErrorMessage from "../InputErrorMessage";
 import MultipleSelectInput from "../selectInput/MultiSelectInput";
 
 interface Props {
@@ -24,7 +25,7 @@ interface SelectType {
 
 const CreateMenu = ({ open, setOpen }: Props) => {
     const [name, setName] = useState<string>("");
-    const [price, setPrice] = useState<number>(0);
+    const [price, setPrice] = useState<number>();
     const [description, setDescription] = useState<string>("");
     const [assetUrl, setAssetUrl] = useState<string>("");
     // select menu category
@@ -33,17 +34,31 @@ const CreateMenu = ({ open, setOpen }: Props) => {
     // select addon category
     const [selectedAddonCategories, setSelectedAddonCategories] = useState<SelectType[] | null>([]);
     const addonCategories = useAppSelector((state) => state.addonCategory.items);
+
+    const [errorMessage, setErrorMessage] = useState<string[]>([]);
     const dispatch = useAppDispatch();
 
-    const onSuccess = () => {
+    const clearInput = () => {
+        setName("");
+        setPrice(undefined);
+        setDescription("");
+        setAssetUrl("");
         setSelectedMenuCategories([]);
         setSelectedAddonCategories([]);
+    };
+
+    const onSuccess = () => {
+        clearInput();
         setOpen(false);
     };
 
     const handleCreateMenu = () => {
-        if (!name || !selectedMenuCategories?.length) {
-            console.log("Field required!");
+        if (!name || price === undefined || !selectedMenuCategories?.length) {
+            setErrorMessage([]);
+            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
+            price === undefined && setErrorMessage((prevState) => [...prevState, "invalid price field"]);
+            !selectedMenuCategories?.length &&
+                setErrorMessage((prevState) => [...prevState, "menu categories field required"]);
             return;
         }
         const menuCategoryIds = selectedMenuCategories.map((MenuCategory) => MenuCategory.id);
@@ -60,7 +75,6 @@ const CreateMenu = ({ open, setOpen }: Props) => {
                 onSuccess,
             };
             dispatch(createMenu(menuData));
-            return;
         } else {
             dispatch(createMenu({ name, price, description, assetUrl, menuCategoryIds, onSuccess }));
         }
@@ -71,7 +85,11 @@ const CreateMenu = ({ open, setOpen }: Props) => {
     return (
         <Dialog
             open={open}
-            onClose={() => setOpen(false)}
+            onClose={() => {
+                clearInput();
+                setErrorMessage([]);
+                setOpen(false);
+            }}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -91,6 +109,7 @@ const CreateMenu = ({ open, setOpen }: Props) => {
                     label="price"
                     variant="outlined"
                     type="number"
+                    slotProps={{ htmlInput: { min: 0 } }}
                     onChange={(evt) => setPrice(Number(evt.target.value))}
                 />
                 <TextField
@@ -115,9 +134,17 @@ const CreateMenu = ({ open, setOpen }: Props) => {
                     values={selectedAddonCategories}
                     setValues={setSelectedAddonCategories}
                 />
+                {!!errorMessage && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button onClick={() => setOpen(false)} autoFocus>
+                <Button
+                    onClick={() => {
+                        clearInput();
+                        setErrorMessage([]);
+                        setOpen(false);
+                    }}
+                    autoFocus
+                >
                     Cancel
                 </Button>
                 <Button onClick={handleCreateMenu} variant="contained">

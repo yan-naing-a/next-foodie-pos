@@ -11,6 +11,7 @@ import {
     TextField,
 } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
+import InputErrorMessage from "../InputErrorMessage";
 import MultiSelectInput from "../selectInput/MultiSelectInput";
 
 interface Props {
@@ -27,17 +28,27 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
     const [name, setName] = useState<string | null>(null);
     const [selectedMenus, setSelectedMenus] = useState<SelectType[] | null>([]);
     const [isRequired, setIsRequired] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string[]>([]);
     const menus = useAppSelector((state) => state.menu.items);
     const dispatch = useAppDispatch();
 
-    const onSuccess = () => {
+    const clearInput = () => {
+        setName("");
         setSelectedMenus([]);
+        setIsRequired(false);
+    };
+
+    const onSuccess = () => {
+        clearInput();
         setOpen(false);
     };
 
     const handleCreateAddonCategory = () => {
         if (!name || !selectedMenus?.length) {
-            console.log("Field required!");
+            setErrorMessage([]);
+            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
+            !selectedMenus?.length &&
+                setErrorMessage((prevState) => [...prevState, "menus field required"]);
             return;
         }
         const menuIds = selectedMenus.map((selectedMenu) => selectedMenu.id);
@@ -49,7 +60,11 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
     return (
         <Dialog
             open={open}
-            onClose={() => setOpen(false)}
+            onClose={() => {
+                setErrorMessage([]);
+                clearInput();
+                setOpen(false);
+            }}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -74,9 +89,17 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
                     control={<Switch onChange={(evt) => setIsRequired(evt.target.checked)} />}
                     label="Required"
                 />
+                {!!errorMessage && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button onClick={() => setOpen(false)} autoFocus>
+                <Button
+                    onClick={() => {
+                        setErrorMessage([]);
+                        clearInput();
+                        setOpen(false);
+                    }}
+                    autoFocus
+                >
                     Cancel
                 </Button>
                 <Button onClick={handleCreateAddonCategory} variant="contained">

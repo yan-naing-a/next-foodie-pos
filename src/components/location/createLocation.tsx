@@ -2,6 +2,7 @@ import { useAppDispatch } from "@/store/hooks";
 import { createLocation } from "@/store/slices/locationSlice";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
+import InputErrorMessage from "../InputErrorMessage";
 
 interface Props {
     open: boolean;
@@ -11,21 +12,37 @@ interface Props {
 const CreateLocation = ({ open, setOpen }: Props) => {
     const [name, setName] = useState<string>("");
     const [address, setAddress] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string[]>([]);
     const dispatch = useAppDispatch();
 
+    const clearInput = () => {
+        setName("");
+        setAddress("");
+    };
+
     const onSuccess = () => {
+        clearInput();
         setOpen(false);
-        console.log("Location created successfully");
     };
 
     const handleCreateLocation = () => {
+        if (!name || !address) {
+            setErrorMessage([]);
+            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
+            !address && setErrorMessage((prevState) => [...prevState, "address field required"]);
+            return;
+        }
         dispatch(createLocation({ name, address, onSuccess }));
     };
 
     return (
         <Dialog
             open={open}
-            onClose={() => setOpen(false)}
+            onClose={() => {
+                clearInput();
+                setErrorMessage([]);
+                setOpen(false);
+            }}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -48,9 +65,16 @@ const CreateLocation = ({ open, setOpen }: Props) => {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                 />
+                {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button onClick={() => setOpen(false)} autoFocus>
+                <Button
+                    onClick={() => {
+                        clearInput();
+                        setOpen(false);
+                    }}
+                    autoFocus
+                >
                     Cancel
                 </Button>
                 <Button onClick={handleCreateLocation} variant="contained">
