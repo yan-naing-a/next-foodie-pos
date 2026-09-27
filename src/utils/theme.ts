@@ -1,18 +1,34 @@
+import type { ThemeMode } from "@/store/slices/themeSlice";
 import { createTheme } from "@mui/material/styles";
-export const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#4C4C6D",
-      dark: "#313131",
+
+const createAppTheme = (mode: ThemeMode) =>
+  createTheme({
+    palette: {
+      mode,
+      background: {
+        default: mode === "dark" ? "#0f172a" : "#f5f5f5",
+        paper: mode === "dark" ? "#1e293b" : "#ffffff",
+      },
+      text: {
+        primary: mode === "dark" ? "#ffffff" : "#111827",
+        secondary: "#ffffff",
+      },
+      primary: {
+        main: mode === "dark" ? "#8ab4f8" : "#4C4C6D",
+      },
+      secondary: {
+        main: mode === "dark" ? "#facc15" : "#FFE194",
+      },
+      info: {
+        main: mode === "dark" ? "#dbeafe" : "#E8F6EF",
+      },
+      success: {
+        main: mode === "dark" ? "#1e293b" : "#1B9C85",
+      },
     },
-    secondary: {
-      main: "#FFE194",
-    },
-    info: {
-      main: "#E8F6EF",
-    },
-    success: {
-      main: "#1B9C85",
-    },
-  },
-});
+  });
+
+export const themes = {
+  light: createAppTheme("light"),
+  dark: createAppTheme("dark"),
+};

@@ -9,6 +9,7 @@ import menuCategoryMenuReducer from "./slices/menuCategoryMenuSlice";
 import menuCategoryReducer from "./slices/menuCategorySlice";
 import menuReducer from "./slices/menuSlice";
 import tableReducer from "./slices/tableSlice";
+import themeReducer from "./slices/themeSlice";
 
 export const store = configureStore({
   reducer: {
@@ -25,6 +26,8 @@ export const store = configureStore({
     // join tables data
     menuCategoryMenu: menuCategoryMenuReducer,
     menuAddonCategory: menuAddonCategoryReducer,
+    // theme mode
+    theme: themeReducer,
   },
 });
 

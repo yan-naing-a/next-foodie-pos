@@ -1,8 +1,11 @@
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setMode } from "@/store/slices/themeSlice";
 import { FormControlLabel, styled, Switch } from "@mui/material";
+import { useEffect } from "react";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     //1. change switch width and height
-    width: 83,
+    width: 82,
     height: 45,
     //2. change switch padding and movement
     padding: 9,
@@ -63,5 +66,34 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 }));
 
 export default function DarkModeSwitch() {
-    return <FormControlLabel control={<MaterialUISwitch defaultChecked />} label="" />;
+    const dispatch = useAppDispatch();
+    const darkMode = useAppSelector((state) => state.theme.mode);
+
+    useEffect(() => {
+        const themeMode = localStorage.getItem("themeMode");
+        if (themeMode) {
+            dispatch(setMode(themeMode));
+        } else {
+            localStorage.setItem("themeMode", "light");
+            dispatch(setMode("light"));
+        }
+    }, []);
+
+    return (
+        <FormControlLabel
+            control={
+                <MaterialUISwitch
+                    checked={darkMode === "dark"}
+                    onChange={(evt) => {
+                        evt.target.checked
+                            ? localStorage.setItem("themeMode", "dark")
+                            : localStorage.setItem("themeMode", "light");
+
+                        dispatch(setMode(evt.target.checked ? "dark" : "light"));
+                    }}
+                />
+            }
+            label={darkMode === "dark" ? "Dark" : "Light"}
+        />
+    );
 }

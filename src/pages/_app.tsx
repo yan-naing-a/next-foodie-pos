@@ -1,6 +1,7 @@
 import Layout from "@/components/layout";
 import { store } from "@/store";
-import { theme } from "@/utils/theme";
+import { useAppSelector } from "@/store/hooks";
+import { themes } from "@/utils/theme";
 import { ThemeProvider } from "@mui/material";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
@@ -11,12 +12,18 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <SessionProvider>
       <Provider store={store}>
-        <ThemeProvider theme={theme}>
+        <AppTheme>
           <Layout>
             <Component {...pageProps} />
           </Layout>
-        </ThemeProvider>
+        </AppTheme>
       </Provider>
     </SessionProvider>
   );
+}
+
+function AppTheme({ children }: { children: React.ReactNode }) {
+  const mode = useAppSelector((state) => state.theme.mode);
+
+  return <ThemeProvider theme={themes[mode]}>{children}</ThemeProvider>;
 }

@@ -8,10 +8,14 @@ const TopBar = () => {
     const { data: session } = useSession();
     return (
         <Box>
-            <AppBar position="static" sx={{ bgcolor: "success.main" }}>
+            <AppBar
+                position="static"
+                elevation={0}
+                sx={{ bgcolor: "success.main", color: "text.secondary", boxShadow: "none" }}
+            >
                 <Toolbar sx={{ display: "flex", justifyContent: "space-between", margin: "4px" }}>
                     <Box sx={{ width: 140 }}>
-                        <Link href="/">
+                        <Link href="/" style={{ display: "block" }}>
                             <Image src={logo} alt="logo" priority style={{ width: "100%", height: "100%" }} />
                         </Link>
                     </Box>
@@ -19,7 +23,7 @@ const TopBar = () => {
                         <Button
                             color="inherit"
                             onClick={() => signOut({ callbackUrl: "/" })}
-                            sx={{ color: "info.main" }}
+                            sx={{ color: "text.secondary" }}
                         >
                             Sign out
                         </Button>

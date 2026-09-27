@@ -28,8 +28,10 @@ const ItemCard = ({ icon, title, href, subtitle, assetUrl }: Props) => {
                     }}
                 >
                     <Box>{!!assetUrl ? <img src={assetUrl} alt={title} /> : icon}</Box>
-                    <Typography sx={{ color: "#4C4C6D", fontWeight: "700" }}>{title}</Typography>
-                    {subtitle && <Typography sx={{ color: "#4C4C6D", fontSize: 14 }}>{subtitle}</Typography>}
+                    <Typography sx={{ color: "text.primary", fontWeight: "700" }}>{title}</Typography>
+                    {subtitle && (
+                        <Typography sx={{ color: "text.primary", fontSize: 14 }}>{subtitle}</Typography>
+                    )}
                 </Paper>
             </Link>
         );
@@ -49,8 +51,8 @@ const ItemCard = ({ icon, title, href, subtitle, assetUrl }: Props) => {
             }}
         >
             <Box>{icon}</Box>
-            <Typography sx={{ color: "#4C4C6D", fontWeight: "700" }}>{title}</Typography>
-            {subtitle && <Typography sx={{ color: "#4C4C6D", fontSize: 14 }}>{subtitle}</Typography>}
+            <Typography sx={{ color: "text.primary", fontWeight: "700" }}>{title}</Typography>
+            {subtitle && <Typography sx={{ color: "text.primary", fontSize: 14 }}>{subtitle}</Typography>}
         </Paper>
     );
 };

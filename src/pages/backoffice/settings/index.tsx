@@ -7,22 +7,12 @@ import {
     MenuItem,
     OutlinedInput,
     Select,
-    Theme,
     Typography,
-    useTheme
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Location } from "../../../../generated/prisma/client";
 
-function getStyles(name: string, value: string, theme: Theme) {
-    return {
-        fontWeight: value ? theme.typography.fontWeightMedium : theme.typography.fontWeightRegular,
-    };
-}
-
 const SettingsPage = () => {
-    const theme = useTheme();
-
     const company = useAppSelector((state) => state.company.items);
     const locations = useAppSelector((state) => state.location.items);
     const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
@@ -54,31 +44,26 @@ const SettingsPage = () => {
     if (!company.length || !selectedLocation) return null;
 
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 5 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <Box>
                 <Typography variant="h4">{company[0].name}</Typography>
             </Box>
             <Box sx={{ width: 500 }}>
-                <Typography variant="h5" sx={{ mb: 2 }}>
+                <Typography variant="h5" sx={{ mb: 1 }}>
                     Select location
                 </Typography>
                 <div>
                     <FormControl sx={{ width: "100%" }}>
                         <InputLabel id="demo-multiple-name-label">location</InputLabel>
                         <Select
-                            labelId="demo-multiple-name-label"
-                            id="demo-multiple-name"
-                            multiple={false}
+                            labelId="demo-single-name-label"
+                            id="demo-single-name"
                             value={selectedLocation.id}
                             onChange={(evt) => handleChange(Number(evt.target.value))}
                             input={<OutlinedInput label="location" />}
                         >
                             {locations.map((location) => (
-                                <MenuItem
-                                    key={location.id}
-                                    value={location.id}
-                                    style={getStyles(location.name, selectedLocation.name, theme)}
-                                >
+                                <MenuItem key={location.id} value={location.id}>
                                     {location.name}
                                 </MenuItem>
                             ))}
@@ -87,7 +72,7 @@ const SettingsPage = () => {
                 </div>
             </Box>
             <Box>
-                <Typography variant="h5" sx={{ mb: 2 }}>
+                <Typography variant="h5" sx={{ mb: 1 }}>
                     Dark mode
                 </Typography>
                 <DarkModeSwitch />
