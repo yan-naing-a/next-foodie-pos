@@ -29,8 +29,6 @@ const SingleSelectInput = ({ items, inputLabel, value, setValue }: Props) => {
             <FormControl sx={{ width: "100%" }}>
                 <InputLabel id="demo-name-label">{inputLabel}</InputLabel>
                 <Select
-                    labelId="demo-name-label"
-                    id="demo-name"
                     value={value?.id || ""}
                     label={inputLabel}
                     onChange={(evt) => handleChange(evt.target.value)}

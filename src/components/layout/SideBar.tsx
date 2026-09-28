@@ -23,7 +23,7 @@ const SideBar = () => {
       sx={{
         minWidth: 250,
         bgcolor: "success.main",
-        color: "text.secondary",
+        color: "#ffffff",
         borderTopRightRadius: "20px",
         boxShadow: "none",
         minHeight: "100vh",
@@ -38,8 +38,8 @@ const SideBar = () => {
           >
             <ListItem disablePadding sx={{ "&.hover": { backgroundColor: "action.hover" } }}>
               <ListItemButton>
-                <ListItemIcon sx={{ color: "text.secondary" }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.label} sx={{ color: "text.secondary" }} />
+                <ListItemIcon sx={{ color: "#ffffff" }}>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} sx={{ color: "#ffffff" }} />
               </ListItemButton>
             </ListItem>
           </Link>
@@ -55,8 +55,8 @@ const SideBar = () => {
           >
             <ListItem disablePadding>
               <ListItemButton>
-                <ListItemIcon sx={{ color: "text.secondary" }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.label} sx={{ color: "text.secondary" }} />
+                <ListItemIcon sx={{ color: "#ffffff" }}>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} sx={{ color: "#ffffff" }} />
               </ListItemButton>
             </ListItem>
           </Link>

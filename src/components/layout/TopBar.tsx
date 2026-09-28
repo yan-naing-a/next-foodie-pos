@@ -23,7 +23,7 @@ const TopBar = () => {
                         <Button
                             color="inherit"
                             onClick={() => signOut({ callbackUrl: "/" })}
-                            sx={{ color: "text.secondary" }}
+                            sx={{ color: "#ffffff" }}
                         >
                             Sign out
                         </Button>

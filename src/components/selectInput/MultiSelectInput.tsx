@@ -1,9 +1,11 @@
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import { ListItemText } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
-import { Theme, useTheme } from "@mui/material/styles";
 import { Dispatch, SetStateAction } from "react";
 import { AddonCategory, Menu, MenuCategory } from "../../../generated/prisma/client";
 
@@ -19,20 +21,7 @@ interface Props {
     setValues: Dispatch<SetStateAction<SelectType[] | null>>;
 }
 
-function getStyles(valueId: number, values: SelectType[], theme: Theme) {
-    return {
-        fontWeight: values.map((v) => v.id).includes(valueId)
-            ? theme.typography.fontWeightMedium
-            : theme.typography.fontWeightRegular,
-    };
-}
-function getNormalStyles(theme: Theme) {
-    return { fontWeight: theme.typography.fontWeightRegular };
-}
-
 export default function MultipleSelectInput({ items, inputLabel, values, setValues }: Props) {
-    const theme = useTheme();
-
     const handleChange = (values: number[]) => {
         const selectedValues = values
             .map((value) => items.find((item) => item.id === value))
@@ -46,23 +35,42 @@ export default function MultipleSelectInput({ items, inputLabel, values, setValu
             <FormControl sx={{ width: "100%" }}>
                 <InputLabel id="demo-multiple-name-label">{inputLabel}</InputLabel>
                 <Select
-                    labelId="demo-multiple-name-label"
-                    id="demo-multiple-name"
                     multiple
                     value={!!values?.length ? values.map((value) => value.id) : []}
                     label={inputLabel}
                     onChange={(evt) => handleChange(evt.target.value as number[])}
                     input={<OutlinedInput label={inputLabel} />}
+                    renderValue={(selectedIds) => {
+                        return selectedIds
+                            .map((selectedId) => items.find((item) => item.id === selectedId))
+                            .map((selectedItem) => selectedItem?.name)
+                            .join(", ");
+                    }}
+                    MenuProps={{
+                        slotProps: {
+                            paper: {
+                                style: {
+                                    maxHeight: 48 * 4.5 + 8,
+                                    width: 250,
+                                },
+                            },
+                        },
+                    }}
                 >
-                    {items.map((item) => (
-                        <MenuItem
-                            key={item.id}
-                            value={item.id}
-                            style={values?.length ? getStyles(item.id, values, theme) : getNormalStyles(theme)}
-                        >
-                            {item.name}
-                        </MenuItem>
-                    ))}
+                    {items.map((item) => {
+                        const selected = values?.some((value) => value.id === item.id) ?? false;
+                        const SelectionIcon = selected ? CheckBoxIcon : CheckBoxOutlineBlankIcon;
+
+                        return (
+                            <MenuItem key={item.id} value={item.id}>
+                                <SelectionIcon
+                                    fontSize="small"
+                                    style={{ marginRight: 8, padding: 9, boxSizing: "content-box" }}
+                                />
+                                <ListItemText primary={item.name} />
+                            </MenuItem>
+                        );
+                    })}
                 </Select>
             </FormControl>
         </div>

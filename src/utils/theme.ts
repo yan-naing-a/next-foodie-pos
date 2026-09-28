@@ -11,7 +11,7 @@ const createAppTheme = (mode: ThemeMode) =>
       },
       text: {
         primary: mode === "dark" ? "#ffffff" : "#111827",
-        secondary: "#ffffff",
+        secondary: mode === "dark" ? "#ffffff" : "#6B7280",
       },
       primary: {
         main: mode === "dark" ? "#8ab4f8" : "#4C4C6D",
