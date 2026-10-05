@@ -24,10 +24,8 @@ const Layout = ({ children }: Props) => {
             localStorage.setItem("themeMode", "light");
             dispatch(setMode("light"));
         }
-    }, []);
 
-    useEffect(() => {
-        !init && dispatch(fetchAppData());
+        if (!init) dispatch(fetchAppData());
     }, [!init]);
 
     return (

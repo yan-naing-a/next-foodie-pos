@@ -22,6 +22,7 @@ const MenuCategoriesPage = () => {
                         key={menuCategory.id}
                         icon={<CategoryIcon sx={{ fontSize: 40 }} />}
                         title={menuCategory.name}
+                        href={`/backoffice/menu-categories/${menuCategory.id}`}
                     />
                 ))}
             </Box>

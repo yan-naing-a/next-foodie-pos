@@ -139,7 +139,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
       const menuAddonCategories = await prisma.menuAddonCategory.findMany({
         where: { menuId: { in: menuIds } },
       });
-      const addonCategoryIds = menuAddonCategories.map((MenuAddonCategory) => MenuAddonCategory.id);
+      const addonCategoryIds = menuAddonCategories.map(
+        (MenuAddonCategory) => MenuAddonCategory.addonCategoryId,
+      );
       //7. addonCategory
       const addonCategories = await prisma.addonCategory.findMany({
         where: { id: { in: addonCategoryIds } },

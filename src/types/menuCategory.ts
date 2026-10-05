@@ -13,11 +13,13 @@ interface BaseOption {
 
 export interface CreateMenuCategoryOption extends BaseOption {
   name: string;
-  menuIds: number[];
+  menuIds?: number[];
 }
 
 export interface UpdateMenuCategoryOption extends BaseOption {
   id: number;
+  name: string;
+  menuIds?: number[];
 }
 export interface DeleteMenuCategoryOption extends BaseOption {
   id: number;
