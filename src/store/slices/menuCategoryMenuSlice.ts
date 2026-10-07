@@ -18,9 +18,15 @@ export const menuCategoryMenuSlice = createSlice({
     addMenuCategoryMenus: (state, action: PayloadAction<MenuCategoryMenu[]>) => {
       state.items = [...state.items, ...action.payload];
     },
-    editMenuCategoryMenus: (state, action: PayloadAction<MenuCategoryMenu[]>) => {
+    editMenuCategoryMenusByMenuCategory: (state, action: PayloadAction<MenuCategoryMenu[]>) => {
       const remainingMenuCategoryMenus = state.items.filter(
         (item) => !action.payload.find((pItem) => item.menuCategoryId === pItem.menuCategoryId),
+      );
+      state.items = [...remainingMenuCategoryMenus, ...action.payload];
+    },
+    editMenuCategoryMenusByMenu: (state, action: PayloadAction<MenuCategoryMenu[]>) => {
+      const remainingMenuCategoryMenus = state.items.filter(
+        (item) => !action.payload.find((pItem) => item.menuId === pItem.menuId),
       );
       state.items = [...remainingMenuCategoryMenus, ...action.payload];
     },
@@ -28,7 +34,11 @@ export const menuCategoryMenuSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setMenuCategoryMenus, addMenuCategoryMenus, editMenuCategoryMenus } =
-  menuCategoryMenuSlice.actions;
+export const {
+  setMenuCategoryMenus,
+  addMenuCategoryMenus,
+  editMenuCategoryMenusByMenuCategory,
+  editMenuCategoryMenusByMenu,
+} = menuCategoryMenuSlice.actions;
 
 export default menuCategoryMenuSlice.reducer;

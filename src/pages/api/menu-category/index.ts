@@ -59,7 +59,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
         where: { id: Number(id) },
         data: { name },
       });
-      //menuIds is optional
+      // menuCategoryMenus
+      // menuIds is optional
       let updatedMenuCategoryMenus: MenuCategoryMenu[] = [];
       if (clientMenuIds.length) {
         const dbMenuCategoryMenus = await prisma.menuCategoryMenu.findMany({
@@ -97,7 +98,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
       }
 
       return res.status(200).json({
-        msg: "Menu Updated",
+        msg: "Menu Category Updated",
         data: { menuCategory: updatedMenuCategory, menuCategoryMenus: updatedMenuCategoryMenus },
       });
     }

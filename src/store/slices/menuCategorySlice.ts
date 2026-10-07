@@ -6,7 +6,7 @@ import {
 import config from "@/utils/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { MenuCategory } from "../../../generated/prisma/client";
-import { addMenuCategoryMenus, editMenuCategoryMenus } from "./menuCategoryMenuSlice";
+import { addMenuCategoryMenus, editMenuCategoryMenusByMenuCategory } from "./menuCategoryMenuSlice";
 
 const initialState: MenuCategoryState = {
   items: [],
@@ -47,7 +47,7 @@ export const updateMenuCategory = createAsyncThunk(
       const { msg, data } = await response.json();
       const { menuCategory, menuCategoryMenus } = data;
       thunkAPI.dispatch(editMenuCategory(menuCategory));
-      thunkAPI.dispatch(editMenuCategoryMenus(menuCategoryMenus));
+      thunkAPI.dispatch(editMenuCategoryMenusByMenuCategory(menuCategoryMenus));
       onSuccess && onSuccess();
     } catch (err) {
       onError && onError(err);

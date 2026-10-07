@@ -21,6 +21,12 @@ export interface CreateMenuOption extends BaseOption {
 }
 export interface UpdateMenuOption extends BaseOption {
   id: number;
+  name: string;
+  price: number;
+  description?: string;
+  assetUrl?: string;
+  menuCategoryIds: number[];
+  addonCategoryIds?: number[];
 }
 export interface DeleteMenuOption extends BaseOption {
   id: number;

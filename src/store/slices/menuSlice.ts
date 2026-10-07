@@ -1,9 +1,9 @@
-import { CreateMenuOption, MenuState } from "@/types/menu";
+import { CreateMenuOption, MenuState, UpdateMenuOption } from "@/types/menu";
 import config from "@/utils/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Menu } from "../../../generated/prisma/client";
-import { addMenuAddonCategories } from "./menuAddonCategorySlice";
-import { addMenuCategoryMenus } from "./menuCategoryMenuSlice";
+import { addMenuAddonCategories, editMenuAddonCategories } from "./menuAddonCategorySlice";
+import { addMenuCategoryMenus, editMenuCategoryMenusByMenu } from "./menuCategoryMenuSlice";
 
 const initialState: MenuState = {
   items: [],
@@ -28,9 +28,7 @@ export const createMenu = createAsyncThunk(
     try {
       const response = await fetch(`${config.apiBaseUrl}/menu`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
           price,
@@ -44,10 +42,48 @@ export const createMenu = createAsyncThunk(
       const { menu, menuCategoryMenus, menuAddonCategories } = data;
       thunkAPI.dispatch(addMenu(menu));
       thunkAPI.dispatch(addMenuCategoryMenus(menuCategoryMenus));
-      console.log("menu addon category: ", menuAddonCategories);
-      if (!!menuAddonCategories) {
-        thunkAPI.dispatch(addMenuAddonCategories(menuAddonCategories));
-      }
+      menuAddonCategories.length && thunkAPI.dispatch(addMenuAddonCategories(menuAddonCategories));
+      onSuccess && onSuccess();
+    } catch (err) {
+      onError && onError(err);
+    }
+  },
+);
+
+export const updateMenu = createAsyncThunk(
+  "menu/updateMenu",
+  async (payload: UpdateMenuOption, thunkAPI) => {
+    const {
+      id,
+      name,
+      price,
+      description,
+      assetUrl,
+      menuCategoryIds,
+      addonCategoryIds,
+      onSuccess,
+      onError,
+    } = payload;
+
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/menu?id=${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          price,
+          description,
+          assetUrl,
+          menuCategoryIds,
+          addonCategoryIds,
+        }),
+      });
+      const { msg, data } = await response.json();
+      const { menu, menuCategoryMenus, menuAddonCategories } = data;
+
+      thunkAPI.dispatch(editMenu(menu));
+      thunkAPI.dispatch(editMenuCategoryMenusByMenu(menuCategoryMenus));
+      menuAddonCategories.length && thunkAPI.dispatch(editMenuAddonCategories(menuAddonCategories));
       onSuccess && onSuccess();
     } catch (err) {
       onError && onError(err);
@@ -65,10 +101,15 @@ export const menuSlice = createSlice({
     addMenu: (state, action: PayloadAction<Menu>) => {
       state.items = [...state.items, action.payload];
     },
+    editMenu: (state, action: PayloadAction<Menu>) => {
+      state.items = state.items.map((menu) =>
+        menu.id === action.payload.id ? action.payload : menu,
+      );
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setMenus, addMenu } = menuSlice.actions;
+export const { setMenus, addMenu, editMenu } = menuSlice.actions;
 
 export default menuSlice.reducer;

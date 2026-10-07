@@ -1,6 +1,6 @@
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import { ListItemText } from "@mui/material";
+import { ListItemText, Typography } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -57,20 +57,34 @@ export default function MultipleSelectInput({ items, inputLabel, values, setValu
                         },
                     }}
                 >
-                    {items.map((item) => {
-                        const selected = values?.some((value) => value.id === item.id) ?? false;
-                        const SelectionIcon = selected ? CheckBoxIcon : CheckBoxOutlineBlankIcon;
+                    {items.length ? (
+                        items.map((item) => {
+                            const selected = values?.some((value) => value.id === item.id) ?? false;
+                            const SelectionIcon = selected ? CheckBoxIcon : CheckBoxOutlineBlankIcon;
 
-                        return (
-                            <MenuItem key={item.id} value={item.id}>
-                                <SelectionIcon
-                                    fontSize="small"
-                                    style={{ marginRight: 8, padding: 9, boxSizing: "content-box" }}
-                                />
-                                <ListItemText primary={item.name} />
-                            </MenuItem>
-                        );
-                    })}
+                            return (
+                                <MenuItem key={item.id} value={item.id}>
+                                    <SelectionIcon
+                                        fontSize="small"
+                                        style={{ marginRight: 8, padding: 9, boxSizing: "content-box" }}
+                                    />
+                                    <ListItemText primary={item.name} />
+                                </MenuItem>
+                            );
+                        })
+                    ) : (
+                        <MenuItem>
+                            <Typography
+                                sx={{
+                                    textAlign: "center",
+                                    width: "100%",
+                                    color: "text.secondary",
+                                    margin: "15px 0",
+                                }}
+                                variant="h6"
+                            >{`No ${inputLabel.toLowerCase()}   `}</Typography>
+                        </MenuItem>
+                    )}
                 </Select>
             </FormControl>
         </div>

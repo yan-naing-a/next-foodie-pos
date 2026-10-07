@@ -23,9 +23,11 @@ const MenusPage = () => {
                         icon={<RestaurantMenuIcon sx={{ fontSize: 40 }} />}
                         title={menu.name}
                         assetUrl={menu.assetUrl}
+                        href={`/backoffice/menus/${menu.id}`}
                     />
                 ))}
             </Box>
+
             <CreateMenu open={open} setOpen={setOpen} />
         </Box>
     );
