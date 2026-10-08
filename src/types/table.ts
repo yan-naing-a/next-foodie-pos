@@ -18,6 +18,8 @@ export interface CreateTableOption extends BaseOption {
 
 export interface UpdateTableOption extends BaseOption {
   id: number;
+  name: string;
+  locationId: number;
 }
 export interface DeleteTableOption extends BaseOption {
   id: number;

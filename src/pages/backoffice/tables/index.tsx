@@ -34,6 +34,7 @@ const TablesPage = () => {
                         key={table.id}
                         icon={<TableBarIcon sx={{ fontSize: 40 }} />}
                         title={table.name}
+                        href={`/backoffice/tables/${table.id}`}
                     />
                 ))}
             </Box>

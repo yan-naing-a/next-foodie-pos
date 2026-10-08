@@ -1,4 +1,4 @@
-import { CreateTableOption, TableState } from "@/types/table";
+import { CreateTableOption, TableState, UpdateTableOption } from "@/types/table";
 import config from "@/utils/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Table } from "../../../generated/prisma/client";
@@ -29,6 +29,24 @@ export const createTable = createAsyncThunk(
     }
   },
 );
+export const updateTable = createAsyncThunk(
+  "table/updateTable",
+  async (payload: UpdateTableOption, thunkAPI) => {
+    const { id, name, locationId, onSuccess, onError } = payload;
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/table?id=${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, locationId }),
+      });
+      const { msg, data: table } = await response.json();
+      thunkAPI.dispatch(editTable(table));
+      onSuccess && onSuccess();
+    } catch (err) {
+      onError && onError(err);
+    }
+  },
+);
 
 export const tableSlice = createSlice({
   name: "table",
@@ -40,10 +58,15 @@ export const tableSlice = createSlice({
     addTable: (state, action: PayloadAction<Table>) => {
       state.items = [...state.items, action.payload];
     },
+    editTable: (state, action: PayloadAction<Table>) => {
+      state.items = state.items.map((item) =>
+        item.id === action.payload.id ? action.payload : item,
+      );
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setTables, addTable } = tableSlice.actions;
+export const { setTables, addTable, editTable } = tableSlice.actions;
 
 export default tableSlice.reducer;
