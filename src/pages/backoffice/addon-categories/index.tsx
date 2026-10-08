@@ -22,6 +22,7 @@ const AddonCategoriesPage = () => {
                         key={addonCategory.id}
                         icon={<ClassIcon sx={{ fontSize: 40 }} />}
                         title={addonCategory.name}
+                        href={`/backoffice/addon-categories/${addonCategory.id}`}
                     />
                 ))}
             </Box>

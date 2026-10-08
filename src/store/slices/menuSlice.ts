@@ -2,7 +2,7 @@ import { CreateMenuOption, MenuState, UpdateMenuOption } from "@/types/menu";
 import config from "@/utils/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Menu } from "../../../generated/prisma/client";
-import { addMenuAddonCategories, editMenuAddonCategories } from "./menuAddonCategorySlice";
+import { addMenuAddonCategories, editMenuAddonCategoriesByMenu } from "./menuAddonCategorySlice";
 import { addMenuCategoryMenus, editMenuCategoryMenusByMenu } from "./menuCategoryMenuSlice";
 
 const initialState: MenuState = {
@@ -83,7 +83,8 @@ export const updateMenu = createAsyncThunk(
 
       thunkAPI.dispatch(editMenu(menu));
       thunkAPI.dispatch(editMenuCategoryMenusByMenu(menuCategoryMenus));
-      menuAddonCategories.length && thunkAPI.dispatch(editMenuAddonCategories(menuAddonCategories));
+      menuAddonCategories.length &&
+        thunkAPI.dispatch(editMenuAddonCategoriesByMenu(menuAddonCategories));
       onSuccess && onSuccess();
     } catch (err) {
       onError && onError(err);
