@@ -54,9 +54,10 @@ const EditMenuCategoryPage = () => {
             setErrorMessage([]);
             !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
             return;
+        } else {
+            const menuIds = currentSelectedMenus?.map((menu) => menu.id);
+            dispatch(updateMenuCategory({ id: menuCategoryId, name, menuIds, onSuccess }));
         }
-        const menuIds = currentSelectedMenus?.map((menu) => menu.id);
-        dispatch(updateMenuCategory({ id: menuCategoryId, name, menuIds, onSuccess }));
     };
 
     if (!name || !currentSelectedMenus) return;

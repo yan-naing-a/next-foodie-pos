@@ -58,9 +58,10 @@ const EditAddonCategoryPage = () => {
             !currentSelectedMenus?.length &&
                 setErrorMessage((prevState) => [...prevState, "menus field required"]);
             return;
+        } else {
+            const menuIds = currentSelectedMenus?.map((menu) => menu.id);
+            dispatch(updateAddonCategory({ id: addonCategoryId, name, menuIds, isRequired, onSuccess }));
         }
-        const menuIds = currentSelectedMenus?.map((menu) => menu.id);
-        dispatch(updateAddonCategory({ id: addonCategoryId, name, menuIds, isRequired, onSuccess }));
     };
 
     if (!name || !currentSelectedMenus) return;

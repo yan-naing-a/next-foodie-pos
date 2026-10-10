@@ -88,46 +88,50 @@ const EditMenuPage = () => {
     const onSuccess = () => {
         router.push("/backoffice/menus");
     };
-    const onError = () => {
-        // Handle error case
-        setErrorMessage((prevState) => [...prevState, "menu categories field required"]);
-    };
 
     const handleUpdateMenu = () => {
-        if (!name || price === undefined || !selectedMenuCategories?.length) {
+        if (
+            !name ||
+            price === undefined ||
+            !currentSelectedMenuCategories ||
+            !currentSelectedMenuCategories.length
+        ) {
             setErrorMessage([]);
             !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
             price === undefined && setErrorMessage((prevState) => [...prevState, "invalid price field"]);
             !currentSelectedMenuCategories?.length &&
                 setErrorMessage((prevState) => [...prevState, "menu categories field required"]);
             return;
-        }
-        const menuCategoryIds = currentSelectedMenuCategories?.map((MenuCategory) => MenuCategory.id);
-
-        // I will FIX later, just for temporary solution
-        if (menuCategoryIds === undefined) {
-            onError();
-            return;
-        }
-        if (selectedAddonCategories?.length) {
-            const addonCategoryIds = currentSelectedAddonCategories?.map(
-                (addonCategory) => addonCategory.id,
-            );
-            const menuData = {
-                id: menuId,
-                name,
-                price,
-                description,
-                assetUrl,
-                menuCategoryIds,
-                addonCategoryIds,
-                onSuccess,
-            };
-            dispatch(updateMenu(menuData));
         } else {
-            dispatch(
-                updateMenu({ id: menuId, name, price, description, assetUrl, menuCategoryIds, onSuccess }),
-            );
+            const menuCategoryIds = currentSelectedMenuCategories?.map((MenuCategory) => MenuCategory.id);
+            if (selectedAddonCategories?.length) {
+                const addonCategoryIds = currentSelectedAddonCategories?.map(
+                    (addonCategory) => addonCategory.id,
+                );
+                const menuData = {
+                    id: menuId,
+                    name,
+                    price,
+                    description,
+                    assetUrl,
+                    menuCategoryIds,
+                    addonCategoryIds,
+                    onSuccess,
+                };
+                dispatch(updateMenu(menuData));
+            } else {
+                dispatch(
+                    updateMenu({
+                        id: menuId,
+                        name,
+                        price,
+                        description,
+                        assetUrl,
+                        menuCategoryIds,
+                        onSuccess,
+                    }),
+                );
+            }
         }
     };
 
