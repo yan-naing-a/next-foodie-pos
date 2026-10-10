@@ -19,6 +19,9 @@ export interface CreateAddonOption extends BaseOption {
 
 export interface UpdateAddonOption extends BaseOption {
   id: number;
+  name: string;
+  price: number;
+  addonCategoryId: number;
 }
 export interface DeleteAddonOption extends BaseOption {
   id: number;

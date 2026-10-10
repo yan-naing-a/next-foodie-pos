@@ -18,7 +18,12 @@ const AddonsPage = () => {
             </Box>
             <Box sx={{ display: "flex", flexWrap: "wrap", mt: 5, gap: 4 }}>
                 {addons.map((addon) => (
-                    <ItemCard key={addon.id} icon={<EggIcon sx={{ fontSize: 40 }} />} title={addon.name} />
+                    <ItemCard
+                        key={addon.id}
+                        icon={<EggIcon sx={{ fontSize: 40 }} />}
+                        title={addon.name}
+                        href={`/backoffice/addons/${addon.id}`}
+                    />
                 ))}
             </Box>
             <CreateAddon open={open} setOpen={setOpen} />

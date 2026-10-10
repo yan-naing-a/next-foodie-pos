@@ -18,7 +18,7 @@ const EditTablePage = () => {
     const dispatch = useAppDispatch();
     //error message
     const [errorMessage, setErrorMessage] = useState<string[]>([]);
-    //addon category
+    //table
     const tables = useAppSelector((state) => state.table.items);
     const table = tables.find((item) => item.id === tableId);
 
