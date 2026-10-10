@@ -22,6 +22,7 @@ const LocationsPage = () => {
                         key={location.id}
                         icon={<LocationOnIcon sx={{ fontSize: 40 }} />}
                         title={location.name}
+                        href={`/backoffice/locations/${location.id}`}
                     />
                 ))}
             </Box>

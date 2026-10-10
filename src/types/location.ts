@@ -18,6 +18,8 @@ export interface CreateLocationOption extends BaseOption {
 
 export interface UpdateLocationOption extends BaseOption {
   id: number;
+  name: string;
+  address: string;
 }
 export interface DeleteLocationOption extends BaseOption {
   id: number;
