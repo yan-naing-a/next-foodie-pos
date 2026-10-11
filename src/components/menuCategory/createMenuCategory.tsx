@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createMenuCategory } from "@/store/slices/menuCategorySlice";
+import { CreateMenuCategoryOption } from "@/types/menuCategory";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
 import InputErrorMessage from "../InputErrorMessage";
@@ -15,42 +16,38 @@ interface SelectType {
     name: string;
 }
 
+const defaultMenuCategory = {
+    name: "",
+    menuIds: [],
+};
+
 const CreateMenuCategory = ({ open, setOpen }: Props) => {
-    const [name, setName] = useState<string>("");
     const [selectedMenus, setSelectedMenus] = useState<SelectType[] | null>([]);
+    const [menuCategory, setMenuCategory] = useState<CreateMenuCategoryOption>(defaultMenuCategory);
     const [errorMessage, setErrorMessage] = useState<string[]>([]);
     const menus = useAppSelector((state) => state.menu.items);
     const dispatch = useAppDispatch();
 
-    const clearInput = () => {
-        setName("");
-        setSelectedMenus([]);
-    };
-
-    const onSuccess = () => {
-        clearInput();
-        setOpen(false);
-    };
+    const onSuccess = () => setOpen(false);
 
     const handleCreateMenuCategory = () => {
-        if (!name || !selectedMenus?.length) {
+        if (!menuCategory.name) {
             setErrorMessage([]);
-            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
-            !selectedMenus?.length &&
-                setErrorMessage((prevState) => [...prevState, "menus field required"]);
+            !menuCategory.name && setErrorMessage((prevState) => [...prevState, "name field required"]);
             return;
         }
-        const menuIds = selectedMenus.map((selectedMenu) => selectedMenu.id);
-        dispatch(createMenuCategory({ name, menuIds, onSuccess }));
+        const menuIds = selectedMenus?.map((selectedMenu) => selectedMenu.id);
+        dispatch(createMenuCategory({ name: menuCategory.name, menuIds, onSuccess }));
     };
 
+    //
     if (!menus.length) return;
 
     return (
         <Dialog
             open={open}
             onClose={() => {
-                clearInput();
+                setMenuCategory(defaultMenuCategory);
                 setErrorMessage([]);
                 setOpen(false);
             }}
@@ -66,7 +63,7 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
                     id="name-input"
                     label="name"
                     variant="outlined"
-                    onChange={(evt) => setName(evt.target.value)}
+                    onChange={(evt) => setMenuCategory({ ...menuCategory, name: evt.target.value })}
                 />
                 <MultipleSelectInput
                     items={menus}
@@ -79,7 +76,7 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
             <DialogActions sx={{ padding: 3 }}>
                 <Button
                     onClick={() => {
-                        clearInput();
+                        setMenuCategory(defaultMenuCategory);
                         setErrorMessage([]);
                         setOpen(false);
                     }}

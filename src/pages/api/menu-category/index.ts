@@ -30,7 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
       const newMenuCategory = await prisma.menuCategory.create({
         data: { name, companyId: dbUser.companyId },
       });
-      //menuIds is optional
+      // menuCategoryMenu, menu id can be optional
       let newMenuCategoryMenus: MenuCategoryMenu[] = [];
       if (menuIds.length) {
         newMenuCategoryMenus = await prisma.$transaction(
@@ -59,14 +59,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
         where: { id: Number(id) },
         data: { name },
       });
-      // menuCategoryMenus
-      // menuIds is optional
+      // menuCategoryMenus, it could be optional
       let updatedMenuCategoryMenus: MenuCategoryMenu[] = [];
       if (clientMenuIds.length) {
+        console.log("reached here");
         const dbMenuCategoryMenus = await prisma.menuCategoryMenu.findMany({
           where: { menuCategoryId: Number(id) },
         });
-        const dbMenuIds = dbMenuCategoryMenus.map((menuCategoryMenu) => menuCategoryMenu.menuId);
+        const dbMenuIds = dbMenuCategoryMenus.map((item) => item.menuId);
         const sameMenuIds =
           dbMenuIds.length === clientMenuIds.length &&
           dbMenuIds.sort().every((value, index) => value === clientMenuIds.sort()[index]);

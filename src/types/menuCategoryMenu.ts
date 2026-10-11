@@ -5,3 +5,8 @@ export interface MenuCategoryMenuState {
   loading: boolean;
   error: Error | null;
 }
+
+export interface EditMenuCategoryMenu {
+  id: number;
+  items: MenuCategoryMenu[];
+}

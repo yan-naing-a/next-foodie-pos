@@ -1,7 +1,7 @@
-import InputErrorMessage from "@/components/InputErrorMessage";
 import MultipleSelectInput from "@/components/selectInput/MultiSelectInput";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateMenuCategory } from "@/store/slices/menuCategorySlice";
+import { UpdateMenuCategoryOption } from "@/types/menuCategory";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -17,8 +17,6 @@ const EditMenuCategoryPage = () => {
     const params = useParams();
     const menuCategoryId = params && Number(params.id);
     const dispatch = useAppDispatch();
-    //error message
-    const [errorMessage, setErrorMessage] = useState<string[]>([]);
     //menuCategory
     const menuCategories = useAppSelector((state) => state.menuCategory.items);
     const menuCategory = menuCategories.find((item) => item.id === menuCategoryId);
@@ -29,38 +27,26 @@ const EditMenuCategoryPage = () => {
         .filter((item) => item.menuCategoryId === menuCategoryId)
         .flatMap((item) => {
             const selectedMenu = menus.find((menu) => menu.id === item.menuId);
-
-            if (!selectedMenu || selectedMenu.id === undefined || !selectedMenu.name) {
-                return [];
-            }
-
+            if (!selectedMenu || selectedMenu.id === undefined || !selectedMenu.name) return [];
             return [{ id: selectedMenu.id, name: selectedMenu.name }];
         });
-
-    const [name, setName] = useState<string>("");
     const [currentSelectedMenus, setCurrentSelectedMenus] = useState<SelectType[] | null>([]);
+    const [data, setData] = useState<UpdateMenuCategoryOption>();
 
     useEffect(() => {
-        menuCategory && setName(menuCategory.name);
-        setCurrentSelectedMenus(selectedMenus);
-    }, [menuCategory?.name, menuCategoryId, menuCategoryMenus, menus]);
+        menuCategory !== undefined && setData({ id: menuCategory.id, name: menuCategory.name });
+        selectedMenus.length && setCurrentSelectedMenus(selectedMenus);
+    }, [menuCategory !== undefined, selectedMenus.length]);
 
-    const onSuccess = () => {
-        router.push("/backoffice/menu-categories");
-    };
+    // check valid data, else return and render again
+    if (!data) return;
+
+    const onSuccess = () => router.push("/backoffice/menu-categories");
 
     const handleUpdateMenuCategory = () => {
-        if (!name) {
-            setErrorMessage([]);
-            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
-            return;
-        } else {
-            const menuIds = currentSelectedMenus?.map((menu) => menu.id);
-            dispatch(updateMenuCategory({ id: menuCategoryId, name, menuIds, onSuccess }));
-        }
+        const menuIds = currentSelectedMenus?.map((menu) => menu.id);
+        dispatch(updateMenuCategory({ ...data, menuIds, onSuccess }));
     };
-
-    if (!name || !currentSelectedMenus) return;
 
     return (
         <Box>
@@ -77,8 +63,8 @@ const EditMenuCategoryPage = () => {
                     id="name-input"
                     label="name"
                     variant="outlined"
-                    value={name}
-                    onChange={(evt) => setName(evt.target.value)}
+                    value={data.name}
+                    onChange={(evt) => setData({ ...data, name: evt.target.value })}
                 />
                 <MultipleSelectInput
                     items={menus}
@@ -86,12 +72,15 @@ const EditMenuCategoryPage = () => {
                     values={currentSelectedMenus}
                     setValues={setCurrentSelectedMenus}
                 />
-                {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
                 <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
                     <Button variant="outlined" onClick={() => router.push("/backoffice/menu-categories")}>
                         Cancel
                     </Button>
-                    <Button variant="contained" onClick={handleUpdateMenuCategory}>
+                    <Button
+                        variant="contained"
+                        onClick={handleUpdateMenuCategory}
+                        disabled={data.name ? false : true}
+                    >
                         Update
                     </Button>
                 </Box>

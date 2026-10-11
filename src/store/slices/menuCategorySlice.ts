@@ -47,7 +47,9 @@ export const updateMenuCategory = createAsyncThunk(
       const { msg, data } = await response.json();
       const { menuCategory, menuCategoryMenus } = data;
       thunkAPI.dispatch(editMenuCategory(menuCategory));
-      thunkAPI.dispatch(editMenuCategoryMenusByMenuCategory(menuCategoryMenus));
+      thunkAPI.dispatch(
+        editMenuCategoryMenusByMenuCategory({ id: menuCategory.id, items: menuCategoryMenus }),
+      );
       onSuccess && onSuccess();
     } catch (err) {
       onError && onError(err);
