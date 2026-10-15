@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createMenu } from "@/store/slices/menuSlice";
+import { CreateMenuOption } from "@/types/menu";
 import {
     Box,
     Button,
@@ -9,7 +10,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import InputErrorMessage from "../InputErrorMessage";
 import MultipleSelectInput from "../selectInput/MultiSelectInput";
 
@@ -23,11 +24,17 @@ interface SelectType {
     name: string;
 }
 
+const defaultMenu: CreateMenuOption = {
+    name: "",
+    price: 0,
+    description: "",
+    assetUrl: "",
+    menuCategoryIds: [],
+    addonCategoryIds: [],
+};
+
 const CreateMenu = ({ open, setOpen }: Props) => {
-    const [name, setName] = useState<string>("");
-    const [price, setPrice] = useState<number>();
-    const [description, setDescription] = useState<string>("");
-    const [assetUrl, setAssetUrl] = useState<string>("");
+    const [newMenu, setNewMenu] = useState<CreateMenuOption>(defaultMenu);
     // select menu category
     const [selectedMenuCategories, setSelectedMenuCategories] = useState<SelectType[] | null>([]);
     const menuCategories = useAppSelector((state) => state.menuCategory.items);
@@ -38,46 +45,39 @@ const CreateMenu = ({ open, setOpen }: Props) => {
     const [errorMessage, setErrorMessage] = useState<string[]>([]);
     const dispatch = useAppDispatch();
 
+    useEffect(() => {
+        if (selectedMenuCategories) {
+            const menuCategoryIds = selectedMenuCategories.map((item) => item.id);
+            setNewMenu((prev) => ({ ...prev, menuCategoryIds }));
+            if (selectedAddonCategories) {
+                const addonCategoryIds = selectedAddonCategories?.map((item) => item.id);
+                setNewMenu((prev) => ({ ...prev, addonCategoryIds }));
+            }
+        }
+    }, [selectedMenuCategories, selectedAddonCategories]);
+
     const clearInput = () => {
-        setName("");
-        setPrice(undefined);
-        setDescription("");
-        setAssetUrl("");
+        setNewMenu(defaultMenu);
         setSelectedMenuCategories([]);
         setSelectedAddonCategories([]);
-    };
-
-    const onSuccess = () => {
-        clearInput();
+        setErrorMessage([]);
         setOpen(false);
     };
 
+    console.log("menuCategoryIds: ", newMenu.menuCategoryIds);
+    console.log("addonCategoryIds: ", newMenu.addonCategoryIds);
+
     const handleCreateMenu = () => {
-        if (!name || price === undefined || !selectedMenuCategories?.length) {
+        if (!newMenu.name || newMenu.price === undefined || !newMenu.menuCategoryIds.length) {
             setErrorMessage([]);
-            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
-            price === undefined && setErrorMessage((prevState) => [...prevState, "invalid price field"]);
-            !selectedMenuCategories?.length &&
+            !newMenu.name && setErrorMessage((prevState) => [...prevState, "name field required"]);
+            newMenu.price === undefined &&
+                setErrorMessage((prevState) => [...prevState, "invalid price field"]);
+            !newMenu.menuCategoryIds?.length &&
                 setErrorMessage((prevState) => [...prevState, "menu categories field required"]);
             return;
         }
-        const menuCategoryIds = selectedMenuCategories.map((MenuCategory) => MenuCategory.id);
-
-        if (selectedAddonCategories?.length) {
-            const addonCategoryIds = selectedAddonCategories.map((addonCategory) => addonCategory.id);
-            const menuData = {
-                name,
-                price,
-                description,
-                assetUrl,
-                menuCategoryIds,
-                addonCategoryIds,
-                onSuccess,
-            };
-            dispatch(createMenu(menuData));
-        } else {
-            dispatch(createMenu({ name, price, description, assetUrl, menuCategoryIds, onSuccess }));
-        }
+        dispatch(createMenu({ ...newMenu, onSuccess: () => clearInput() }));
     };
 
     if (!menuCategories.length) return;
@@ -85,11 +85,7 @@ const CreateMenu = ({ open, setOpen }: Props) => {
     return (
         <Dialog
             open={open}
-            onClose={() => {
-                clearInput();
-                setErrorMessage([]);
-                setOpen(false);
-            }}
+            onClose={() => clearInput()}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -102,7 +98,7 @@ const CreateMenu = ({ open, setOpen }: Props) => {
                     id="name-input"
                     label="name"
                     variant="outlined"
-                    onChange={(evt) => setName(evt.target.value)}
+                    onChange={(evt) => setNewMenu({ ...newMenu, name: evt.target.value })}
                 />
                 <TextField
                     id="price-input"
@@ -110,14 +106,14 @@ const CreateMenu = ({ open, setOpen }: Props) => {
                     variant="outlined"
                     type="number"
                     slotProps={{ htmlInput: { min: 0 } }}
-                    onChange={(evt) => setPrice(Number(evt.target.value))}
+                    onChange={(evt) => setNewMenu({ ...newMenu, price: Number(evt.target.value) })}
                 />
                 <TextField
                     id="description-input"
                     label="description"
                     multiline
                     rows={3}
-                    onChange={(evt) => setDescription(evt.target.value)}
+                    onChange={(evt) => setNewMenu({ ...newMenu, description: evt.target.value })}
                 />
                 <Typography variant="body1">There must be image upload</Typography>
                 {/* menu category */}
@@ -137,14 +133,7 @@ const CreateMenu = ({ open, setOpen }: Props) => {
                 {!!errorMessage && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button
-                    onClick={() => {
-                        clearInput();
-                        setErrorMessage([]);
-                        setOpen(false);
-                    }}
-                    autoFocus
-                >
+                <Button onClick={() => clearInput()} autoFocus>
                     Cancel
                 </Button>
                 <Button onClick={handleCreateMenu} variant="contained">

@@ -68,11 +68,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
       if (!name || !clientMenuCategoryIds.length)
         return res.status(400).json({ msg: "Bad Request" });
 
+      // menu
       const validMenu = await prisma.menu.findFirst({ where: { id: Number(id) } });
       if (!validMenu) return res.status(404).json({ msg: "Menu not found" });
-
-      // menu
-      const updateMenu = await prisma.menu.update({
+      const updatedMenu = await prisma.menu.update({
         where: { id: Number(id) },
         data: { name, price, description, assetUrl },
       });
@@ -89,6 +88,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
         dbMenuCategoryIds
           .sort()
           .every((value, index) => value === clientMenuCategoryIds.sort()[index]);
+
       let updatedMenuCategoryMenus: MenuCategoryMenu[] = [];
       if (sameMenuCategoryIds) {
         updatedMenuCategoryMenus = dbMenuCategoryMenus;
@@ -158,11 +158,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
             where: { menuId: Number(id) },
           });
         }
+      } else {
+        // WARNING : this need to change isArchived as TRUE
+        await prisma.menuAddonCategory.deleteMany({ where: { menuId: Number(id) } });
       }
       return res.status(200).json({
         msg: "Menu Updated",
         data: {
-          menu: updateMenu,
+          menu: updatedMenu,
           menuCategoryMenus: updatedMenuCategoryMenus,
           menuAddonCategories: updatedMenuAddonCategories,
         },

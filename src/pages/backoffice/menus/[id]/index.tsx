@@ -2,6 +2,7 @@ import InputErrorMessage from "@/components/InputErrorMessage";
 import MultipleSelectInput from "@/components/selectInput/MultiSelectInput";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateMenu } from "@/store/slices/menuSlice";
+import { UpdateMenuOption } from "@/types/menu";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -19,54 +20,33 @@ const EditMenuPage = () => {
     const dispatch = useAppDispatch();
     //error message
     const [errorMessage, setErrorMessage] = useState<string[]>([]);
-    //menuCategory
+    //menu
     const menus = useAppSelector((state) => state.menu.items);
     const menu = menus.find((item) => item.id === menuId);
-    //selected Menu Categories
     const menuCategories = useAppSelector((state) => state.menuCategory.items);
     const menuCategoryMenus = useAppSelector((state) => state.menuCategoryMenu.items);
-    const selectedMenuCategories: SelectType[] = menuCategoryMenus
-        .filter((item) => item.menuId === menuId)
-        .flatMap((item) => {
-            const selectedMenuCategory = menuCategories.find(
-                (menuCategory) => menuCategory.id === item.menuCategoryId,
-            );
-
-            if (
-                !selectedMenuCategory ||
-                selectedMenuCategory.id === undefined ||
-                !selectedMenuCategory.name
-            ) {
-                return [];
-            }
-
-            return [{ id: selectedMenuCategory.id, name: selectedMenuCategory.name }];
-        });
-    //selected addon Categories
     const addonCategories = useAppSelector((state) => state.addonCategory.items);
     const menuAddonCategories = useAppSelector((state) => state.menuAddonCategory.items);
-    const selectedAddonCategories: SelectType[] = menuAddonCategories
+    //menuCategory
+    const selectedMenuCategories = menuCategoryMenus
         .filter((item) => item.menuId === menuId)
         .flatMap((item) => {
-            const selectedAddonCategory = addonCategories.find(
+            const category = menuCategories.find(
+                (menuCategory) => menuCategory.id === item.menuCategoryId,
+            );
+            return category !== undefined ? [{ id: category.id, name: category.name }] : [];
+        });
+    //addonCategory
+    const selectedAddonCategories = menuAddonCategories
+        .filter((item) => item.menuId === menuId)
+        .flatMap((item) => {
+            const category = addonCategories.find(
                 (addonCategory) => addonCategory.id === item.addonCategoryId,
             );
-
-            if (
-                !selectedAddonCategory ||
-                selectedAddonCategory.id === undefined ||
-                !selectedAddonCategory.name
-            ) {
-                return [];
-            }
-
-            return [{ id: selectedAddonCategory.id, name: selectedAddonCategory.name }];
+            return category !== undefined ? [{ id: category.id, name: category.name }] : [];
         });
 
-    const [name, setName] = useState<string>("");
-    const [price, setPrice] = useState<number>();
-    const [description, setDescription] = useState<string>("");
-    const [assetUrl, setAssetUrl] = useState<string>("");
+    const [updatedMenu, setUpdateMenu] = useState<UpdateMenuOption>();
     const [currentSelectedMenuCategories, setCurrentSelectedMenuCategories] = useState<
         SelectType[] | null
     >([]);
@@ -75,67 +55,36 @@ const EditMenuPage = () => {
     >([]);
 
     useEffect(() => {
-        if (menu) {
-            setName(menu.name);
-            setPrice(menu.price);
-            setDescription(() => menu.description || "");
-            setAssetUrl(() => menu.assetUrl || "");
-        }
-        setCurrentSelectedMenuCategories(selectedMenuCategories);
-        setCurrentSelectedAddonCategories(selectedAddonCategories);
-    }, [menu?.name, menuId, menuCategoryMenus, menuCategories, addonCategories, menuAddonCategories]);
+        selectedMenuCategories.length && setCurrentSelectedMenuCategories(selectedMenuCategories);
+        selectedAddonCategories.length && setCurrentSelectedAddonCategories(selectedAddonCategories);
+        menu !== undefined &&
+            setUpdateMenu({
+                id: menu.id,
+                name: menu.name,
+                price: menu.price,
+                description: menu.description ?? "",
+                assetUrl: menu.assetUrl ?? "",
+                menuCategoryIds: selectedMenuCategories.map((item) => item.id),
+                addonCategoryIds: selectedAddonCategories.map((item) => item.id),
+            });
+    }, [menu !== undefined, selectedMenuCategories.length, selectedAddonCategories.length]);
 
-    const onSuccess = () => {
-        router.push("/backoffice/menus");
-    };
+    // if not updateMenu, return back
+    if (updatedMenu === undefined) return;
 
     const handleUpdateMenu = () => {
-        if (
-            !name ||
-            price === undefined ||
-            !currentSelectedMenuCategories ||
-            !currentSelectedMenuCategories.length
-        ) {
-            setErrorMessage([]);
-            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
-            price === undefined && setErrorMessage((prevState) => [...prevState, "invalid price field"]);
-            !currentSelectedMenuCategories?.length &&
-                setErrorMessage((prevState) => [...prevState, "menu categories field required"]);
-            return;
-        } else {
-            const menuCategoryIds = currentSelectedMenuCategories?.map((MenuCategory) => MenuCategory.id);
-            if (selectedAddonCategories?.length) {
-                const addonCategoryIds = currentSelectedAddonCategories?.map(
-                    (addonCategory) => addonCategory.id,
-                );
-                const menuData = {
-                    id: menuId,
-                    name,
-                    price,
-                    description,
-                    assetUrl,
-                    menuCategoryIds,
-                    addonCategoryIds,
-                    onSuccess,
-                };
-                dispatch(updateMenu(menuData));
-            } else {
-                dispatch(
-                    updateMenu({
-                        id: menuId,
-                        name,
-                        price,
-                        description,
-                        assetUrl,
-                        menuCategoryIds,
-                        onSuccess,
-                    }),
-                );
-            }
-        }
+        const menuCategoryIds = currentSelectedMenuCategories?.map((item) => item.id);
+        const addonCategoryIds = currentSelectedAddonCategories?.map((item) => item.id);
+        if (!menuCategoryIds) return;
+        dispatch(
+            updateMenu({
+                ...updatedMenu,
+                menuCategoryIds,
+                addonCategoryIds,
+                onSuccess: () => router.push("/backoffice/menus"),
+            }),
+        );
     };
-
-    if (!name || !currentSelectedMenuCategories) return;
 
     return (
         <Box>
@@ -152,24 +101,25 @@ const EditMenuPage = () => {
                     id="name-input"
                     label="name"
                     variant="outlined"
-                    value={name}
-                    onChange={(evt) => setName(evt.target.value)}
+                    value={updatedMenu.name}
+                    onChange={(evt) => setUpdateMenu({ ...updatedMenu, name: evt.target.value })}
                 />
                 <TextField
                     id="price-input"
                     label="price"
                     variant="outlined"
-                    value={price}
+                    value={updatedMenu.price}
                     type="number"
                     slotProps={{ htmlInput: { min: 0 } }}
-                    onChange={(evt) => setPrice(Number(evt.target.value))}
+                    onChange={(evt) => setUpdateMenu({ ...updatedMenu, price: Number(evt.target.value) })}
                 />
                 <TextField
                     id="description-input"
                     label="description"
                     multiline
+                    value={updatedMenu.description}
                     rows={3}
-                    onChange={(evt) => setDescription(evt.target.value)}
+                    onChange={(evt) => setUpdateMenu({ ...updatedMenu, description: evt.target.value })}
                 />
                 <Typography variant="body1">There must be image upload</Typography>
                 {/* menu category */}
@@ -188,10 +138,20 @@ const EditMenuPage = () => {
                 />
                 {!!errorMessage && <InputErrorMessage errorMessage={errorMessage} />}
                 <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
-                    <Button variant="outlined" onClick={() => router.push("/backoffice/menu-categories")}>
+                    <Button variant="outlined" onClick={() => router.push("/backoffice/menus")}>
                         Cancel
                     </Button>
-                    <Button variant="contained" onClick={handleUpdateMenu}>
+                    <Button
+                        variant="contained"
+                        disabled={
+                            updatedMenu.name &&
+                                updatedMenu.price !== undefined &&
+                                updatedMenu.menuCategoryIds.length
+                                ? false
+                                : true
+                        }
+                        onClick={handleUpdateMenu}
+                    >
                         Update
                     </Button>
                 </Box>

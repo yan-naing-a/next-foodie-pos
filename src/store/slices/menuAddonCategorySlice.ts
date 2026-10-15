@@ -1,4 +1,4 @@
-import { MenuAddonCategoryState } from "@/types/menuAddonCategory";
+import { EditMenuAddonCategory, MenuAddonCategoryState } from "@/types/menuAddonCategory";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { MenuAddonCategory } from "../../../generated/prisma/client";
 
@@ -18,17 +18,20 @@ export const menuAddonCategorySlice = createSlice({
     addMenuAddonCategories: (state, action: PayloadAction<MenuAddonCategory[]>) => {
       state.items = [...state.items, ...action.payload];
     },
-    editMenuAddonCategoriesByMenu: (state, action: PayloadAction<MenuAddonCategory[]>) => {
+    editMenuAddonCategoriesByMenu: (state, action: PayloadAction<EditMenuAddonCategory>) => {
       const remainingMenuAddonCategories = state.items.filter(
-        (item) => !action.payload.find((pItem) => item.menuId === pItem.menuId),
+        (item) => item.menuId !== action.payload.id,
       );
-      state.items = [...remainingMenuAddonCategories, ...action.payload];
+      state.items = [...remainingMenuAddonCategories, ...action.payload.items];
     },
-    editMenuAddonCategoriesByAddonCategory: (state, action: PayloadAction<MenuAddonCategory[]>) => {
+    editMenuAddonCategoriesByAddonCategory: (
+      state,
+      action: PayloadAction<EditMenuAddonCategory>,
+    ) => {
       const remainingMenuAddonCategories = state.items.filter(
-        (item) => !action.payload.find((pItem) => item.addonCategoryId === pItem.addonCategoryId),
+        (item) => item.addonCategoryId !== action.payload.id,
       );
-      state.items = [...remainingMenuAddonCategories, ...action.payload];
+      state.items = [...remainingMenuAddonCategories, ...action.payload.items];
     },
   },
 });

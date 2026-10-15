@@ -31,21 +31,23 @@ const EditMenuCategoryPage = () => {
             return [{ id: selectedMenu.id, name: selectedMenu.name }];
         });
     const [currentSelectedMenus, setCurrentSelectedMenus] = useState<SelectType[] | null>([]);
-    const [data, setData] = useState<UpdateMenuCategoryOption>();
+    const [updatedMenuCategory, setUpdatedMenuCategory] = useState<UpdateMenuCategoryOption>();
 
     useEffect(() => {
-        menuCategory !== undefined && setData({ id: menuCategory.id, name: menuCategory.name });
         selectedMenus.length && setCurrentSelectedMenus(selectedMenus);
+        const menuIds = selectedMenus.map((menu) => menu.id);
+        menuCategory !== undefined &&
+            setUpdatedMenuCategory({ id: menuCategory.id, name: menuCategory.name, menuIds });
     }, [menuCategory !== undefined, selectedMenus.length]);
 
-    // check valid data, else return and render again
-    if (!data) return;
+    // check valid data, else return and render agains
+    if (!updatedMenuCategory) return;
 
     const onSuccess = () => router.push("/backoffice/menu-categories");
 
     const handleUpdateMenuCategory = () => {
         const menuIds = currentSelectedMenus?.map((menu) => menu.id);
-        dispatch(updateMenuCategory({ ...data, menuIds, onSuccess }));
+        dispatch(updateMenuCategory({ ...updatedMenuCategory, menuIds, onSuccess }));
     };
 
     return (
@@ -63,8 +65,10 @@ const EditMenuCategoryPage = () => {
                     id="name-input"
                     label="name"
                     variant="outlined"
-                    value={data.name}
-                    onChange={(evt) => setData({ ...data, name: evt.target.value })}
+                    value={updatedMenuCategory.name}
+                    onChange={(evt) =>
+                        setUpdatedMenuCategory({ ...updatedMenuCategory, name: evt.target.value })
+                    }
                 />
                 <MultipleSelectInput
                     items={menus}
@@ -79,7 +83,7 @@ const EditMenuCategoryPage = () => {
                     <Button
                         variant="contained"
                         onClick={handleUpdateMenuCategory}
-                        disabled={data.name ? false : true}
+                        disabled={updateMenuCategory.name ? false : true}
                     >
                         Update
                     </Button>

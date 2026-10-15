@@ -78,15 +78,16 @@ export const updateMenu = createAsyncThunk(
           addonCategoryIds,
         }),
       });
+
       const { msg, data } = await response.json();
       const { menu, menuCategoryMenus, menuAddonCategories } = data;
 
       thunkAPI.dispatch(editMenu(menu));
-      thunkAPI.dispatch(editMenuCategoryMenusByMenu(menuCategoryMenus));
-      menuAddonCategories.length &&
-        thunkAPI.dispatch(editMenuAddonCategoriesByMenu(menuAddonCategories));
+      thunkAPI.dispatch(editMenuCategoryMenusByMenu({ id: menu.id, items: menuCategoryMenus }));
+      thunkAPI.dispatch(editMenuAddonCategoriesByMenu({ id: menu.id, items: menuAddonCategories }));
       onSuccess && onSuccess();
     } catch (err) {
+      console.log("reach to error code");
       onError && onError(err);
     }
   },
