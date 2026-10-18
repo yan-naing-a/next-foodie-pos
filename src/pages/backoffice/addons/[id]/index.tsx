@@ -22,20 +22,19 @@ const EditAddonPage = () => {
     const addon = addons.find((item) => item.id === addonId);
     //addon categories
     const addonCategories = useAppSelector((state) => state.addonCategory.items);
+    const addonCategory = addonCategories.find((item) => item.id === addon?.addonCategoryId);
 
     const [updatedAddon, setUpdatedAddon] = useState<UpdateAddonOption>();
     const [selectedAddonCategory, setSelectedAddonCategory] = useState<SelectType | null>(null);
 
     useEffect(() => {
-        addon && updateAddon({ id: addonId, name: addon.name, price: addon.price });
-        if (addonCategories.length && addon) {
-            const singleAddonCategory = addonCategories.find((item) => item.id === addon.addonCategoryId);
-            setSelectedAddonCategory(singleAddonCategory || null);
-        }
-    }, [addon, addonId, addonCategories]);
+        console.log("Hello world");
+        addon && setUpdatedAddon({ id: addonId, name: addon.name, price: addon.price });
+        addonCategory && setSelectedAddonCategory(addonCategory);
+    }, [addon, addonId, addonCategories, addonCategory]);
 
     // if not valid, return back
-    if (!updatedAddon?.name || selectedAddonCategory === null) return;
+    if (!updatedAddon || !selectedAddonCategory) return;
 
     const onSuccess = () => router.push("/backoffice/addons");
 
@@ -90,7 +89,7 @@ const EditAddonPage = () => {
                         variant="contained"
                         onClick={handleUpdateAddon}
                         disabled={
-                            updatedAddon.name && updatedAddon.price !== undefined && updatedAddon.addonCategoryId
+                            updatedAddon.name && updatedAddon.price !== undefined && selectedAddonCategory
                                 ? false
                                 : true
                         }

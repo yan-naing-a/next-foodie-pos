@@ -23,10 +23,7 @@ const CreateTable = ({ open, setOpen }: Props) => {
     const clearInput = () => {
         setName("");
         setSelectedLocationId("");
-    };
-
-    const onSuccess = () => {
-        clearInput();
+        setErrorMessage([]);
         setOpen(false);
     };
 
@@ -38,17 +35,15 @@ const CreateTable = ({ open, setOpen }: Props) => {
                 setErrorMessage((prevState) => [...prevState, "select location on setting first"]);
             return;
         }
-        dispatch(createTable({ name, locationId: Number(selectedLocationId), onSuccess }));
+        dispatch(
+            createTable({ name, locationId: Number(selectedLocationId), onSuccess: () => clearInput() }),
+        );
     };
 
     return (
         <Dialog
             open={open}
-            onClose={() => {
-                clearInput();
-                setErrorMessage([]);
-                setOpen(false);
-            }}
+            onClose={clearInput}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -66,14 +61,7 @@ const CreateTable = ({ open, setOpen }: Props) => {
                 {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button
-                    onClick={() => {
-                        clearInput();
-                        setErrorMessage([]);
-                        setOpen(false);
-                    }}
-                    autoFocus
-                >
+                <Button onClick={clearInput} autoFocus>
                     Cancel
                 </Button>
                 <Button onClick={handleCreateTable} variant="contained">

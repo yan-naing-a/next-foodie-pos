@@ -42,9 +42,7 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
             return;
         }
         const menuIds = selectedMenus?.map((selectedMenu) => selectedMenu.id);
-        dispatch(
-            createMenuCategory({ name: menuCategory.name, menuIds, onSuccess: () => clearInput() }),
-        );
+        dispatch(createMenuCategory({ ...menuCategory, menuIds, onSuccess: () => clearInput() }));
     };
 
     //

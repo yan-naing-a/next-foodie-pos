@@ -26,11 +26,14 @@ const EditTablePage = () => {
 
     useEffect(() => {
         table && setName(table.name);
-    }, [table?.name, tableId]);
+    }, [table, tableId]);
 
-    const onSuccess = () => {
-        router.push("/backoffice/tables");
-    };
+    const onSuccess = () => router.push("/backoffice/tables");
+
+    console.log("name: ", name);
+    console.log("location id: ", table?.id);
+    //if not valid ,return back
+    if (!name && !table?.locationId) return;
 
     const handleUpdateMenuCategory = () => {
         if (!name || !table?.locationId) {
@@ -40,8 +43,6 @@ const EditTablePage = () => {
         }
         dispatch(updateTable({ id: tableId, name, locationId: table?.locationId, onSuccess }));
     };
-
-    if (!name) return;
 
     return (
         <Box>
@@ -66,7 +67,11 @@ const EditTablePage = () => {
                     <Button variant="outlined" onClick={() => router.push("/backoffice/tables")}>
                         Cancel
                     </Button>
-                    <Button variant="contained" onClick={handleUpdateMenuCategory}>
+                    <Button
+                        variant="contained"
+                        onClick={handleUpdateMenuCategory}
+                        disabled={name ? false : true}
+                    >
                         Update
                     </Button>
                 </Box>

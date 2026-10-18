@@ -35,8 +35,6 @@ const CreateAddon = ({ open, setOpen }: Props) => {
         setOpen(false);
     };
 
-    const onSuccess = () => clearInput();
-
     // if not valid ,return back
     if (!addonCategories.length) return;
 
@@ -51,7 +49,7 @@ const CreateAddon = ({ open, setOpen }: Props) => {
             return;
         }
         const addonCategoryId = selectedAddonCategory.id;
-        dispatch(createAddon({ name: addon.name, price: addon.price, addonCategoryId, onSuccess }));
+        dispatch(createAddon({ ...addon, addonCategoryId, onSuccess: () => clearInput() }));
     };
 
     return (

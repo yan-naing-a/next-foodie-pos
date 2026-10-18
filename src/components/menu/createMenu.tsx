@@ -64,9 +64,6 @@ const CreateMenu = ({ open, setOpen }: Props) => {
         setOpen(false);
     };
 
-    console.log("menuCategoryIds: ", newMenu.menuCategoryIds);
-    console.log("addonCategoryIds: ", newMenu.addonCategoryIds);
-
     const handleCreateMenu = () => {
         if (!newMenu.name || newMenu.price === undefined || !newMenu.menuCategoryIds.length) {
             setErrorMessage([]);
@@ -85,7 +82,7 @@ const CreateMenu = ({ open, setOpen }: Props) => {
     return (
         <Dialog
             open={open}
-            onClose={() => clearInput()}
+            onClose={clearInput}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -133,7 +130,7 @@ const CreateMenu = ({ open, setOpen }: Props) => {
                 {!!errorMessage && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button onClick={() => clearInput()} autoFocus>
+                <Button onClick={clearInput} autoFocus>
                     Cancel
                 </Button>
                 <Button onClick={handleCreateMenu} variant="contained">

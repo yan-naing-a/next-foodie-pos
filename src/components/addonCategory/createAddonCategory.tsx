@@ -54,13 +54,7 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
             return;
         }
         const menuIds = selectedMenus.map((selectedMenu) => selectedMenu.id);
-        dispatch(
-            createAddonCategory({
-                ...addonCategory,
-                menuIds,
-                onSuccess: () => clearInput(),
-            }),
-        );
+        dispatch(createAddonCategory({ ...addonCategory, menuIds, onSuccess: () => clearInput() }));
     };
 
     if (!menus.length) return;

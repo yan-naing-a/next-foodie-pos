@@ -1,5 +1,6 @@
 import { useAppDispatch } from "@/store/hooks";
 import { createLocation } from "@/store/slices/locationSlice";
+import { CreateLocationOption } from "@/types/location";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
 import InputErrorMessage from "../InputErrorMessage";
@@ -9,40 +10,38 @@ interface Props {
     setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
+const defaultLocation: CreateLocationOption = {
+    name: "",
+    address: "",
+};
+
 const CreateLocation = ({ open, setOpen }: Props) => {
-    const [name, setName] = useState<string>("");
-    const [address, setAddress] = useState<string>("");
+    // const [name, setName] = useState<string>("");
+    // const [address, setAddress] = useState<string>("");
+    const [location, setLocation] = useState<CreateLocationOption>(defaultLocation);
     const [errorMessage, setErrorMessage] = useState<string[]>([]);
     const dispatch = useAppDispatch();
 
     const clearInput = () => {
-        setName("");
-        setAddress("");
-    };
-
-    const onSuccess = () => {
-        clearInput();
+        setLocation(defaultLocation);
+        setErrorMessage([]);
         setOpen(false);
     };
 
     const handleCreateLocation = () => {
-        if (!name || !address) {
+        if (!location.name || !location.address) {
             setErrorMessage([]);
-            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
-            !address && setErrorMessage((prevState) => [...prevState, "address field required"]);
+            !location.name && setErrorMessage((prevState) => [...prevState, "name field required"]);
+            !location.address && setErrorMessage((prevState) => [...prevState, "address field required"]);
             return;
         }
-        dispatch(createLocation({ name, address, onSuccess }));
+        dispatch(createLocation({ ...location, onSuccess: () => clearInput() }));
     };
 
     return (
         <Dialog
             open={open}
-            onClose={() => {
-                clearInput();
-                setErrorMessage([]);
-                setOpen(false);
-            }}
+            onClose={clearInput}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -55,26 +54,20 @@ const CreateLocation = ({ open, setOpen }: Props) => {
                     id="name-input"
                     label="name"
                     variant="outlined"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={location.name}
+                    onChange={(e) => setLocation({ ...location, name: e.target.value })}
                 />
                 <TextField
                     id="address-input"
                     label="address"
                     variant="outlined"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    value={location.address}
+                    onChange={(e) => setLocation({ ...location, address: e.target.value })}
                 />
                 {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button
-                    onClick={() => {
-                        clearInput();
-                        setOpen(false);
-                    }}
-                    autoFocus
-                >
+                <Button onClick={clearInput} autoFocus>
                     Cancel
                 </Button>
                 <Button onClick={handleCreateLocation} variant="contained">
