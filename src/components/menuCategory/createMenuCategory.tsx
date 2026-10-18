@@ -28,7 +28,12 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
     const menus = useAppSelector((state) => state.menu.items);
     const dispatch = useAppDispatch();
 
-    const onSuccess = () => setOpen(false);
+    const clearInput = () => {
+        setMenuCategory(defaultMenuCategory);
+        setErrorMessage([]);
+        setSelectedMenus([]);
+        setOpen(false);
+    };
 
     const handleCreateMenuCategory = () => {
         if (!menuCategory.name) {
@@ -37,7 +42,9 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
             return;
         }
         const menuIds = selectedMenus?.map((selectedMenu) => selectedMenu.id);
-        dispatch(createMenuCategory({ name: menuCategory.name, menuIds, onSuccess }));
+        dispatch(
+            createMenuCategory({ name: menuCategory.name, menuIds, onSuccess: () => clearInput() }),
+        );
     };
 
     //
@@ -46,11 +53,7 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
     return (
         <Dialog
             open={open}
-            onClose={() => {
-                setMenuCategory(defaultMenuCategory);
-                setErrorMessage([]);
-                setOpen(false);
-            }}
+            onClose={clearInput}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -74,14 +77,7 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
                 {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button
-                    onClick={() => {
-                        setMenuCategory(defaultMenuCategory);
-                        setErrorMessage([]);
-                        setOpen(false);
-                    }}
-                    autoFocus
-                >
+                <Button onClick={clearInput} autoFocus>
                     Cancel
                 </Button>
                 <Button onClick={handleCreateMenuCategory} variant="contained">

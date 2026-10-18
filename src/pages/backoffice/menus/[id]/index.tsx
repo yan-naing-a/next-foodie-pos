@@ -70,7 +70,7 @@ const EditMenuPage = () => {
     }, [menu !== undefined, selectedMenuCategories.length, selectedAddonCategories.length]);
 
     // if not updateMenu, return back
-    if (updatedMenu === undefined) return;
+    if (updatedMenu === undefined || !currentSelectedMenuCategories) return;
 
     const handleUpdateMenu = () => {
         const menuCategoryIds = currentSelectedMenuCategories?.map((item) => item.id);
@@ -146,7 +146,7 @@ const EditMenuPage = () => {
                         disabled={
                             updatedMenu.name &&
                                 updatedMenu.price !== undefined &&
-                                updatedMenu.menuCategoryIds.length
+                                currentSelectedMenuCategories.length
                                 ? false
                                 : true
                         }

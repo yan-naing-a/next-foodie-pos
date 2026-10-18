@@ -52,7 +52,12 @@ export const updateAddonCategory = createAsyncThunk(
       const { msg, data } = await response.json();
       const { addonCategory, menuAddonCategories } = data;
       thunkAPI.dispatch(editAddonCategories(addonCategory));
-      thunkAPI.dispatch(editMenuAddonCategoriesByAddonCategory(menuAddonCategories));
+      thunkAPI.dispatch(
+        editMenuAddonCategoriesByAddonCategory({
+          id: addonCategory.id,
+          items: menuAddonCategories,
+        }),
+      );
       onSuccess && onSuccess();
     } catch (err) {
       onError && onError(err);

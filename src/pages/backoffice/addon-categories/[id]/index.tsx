@@ -1,7 +1,7 @@
-import InputErrorMessage from "@/components/InputErrorMessage";
 import MultiSelectInput from "@/components/selectInput/MultiSelectInput";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateAddonCategory } from "@/store/slices/addonCategorySlice";
+import { UpdateAddonCategoryOption } from "@/types/addonCategory";
 import { Box, Button, FormControlLabel, Switch, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -17,8 +17,6 @@ const EditAddonCategoryPage = () => {
     const params = useParams();
     const addonCategoryId = params && Number(params.id);
     const dispatch = useAppDispatch();
-    //error message
-    const [errorMessage, setErrorMessage] = useState<string[]>([]);
     //addon category
     const addonCategories = useAppSelector((state) => state.addonCategory.items);
     const addonCategory = addonCategories.find((item) => item.id === addonCategoryId);
@@ -35,36 +33,30 @@ const EditAddonCategoryPage = () => {
             return [{ id: selectedMenu.id, name: selectedMenu.name }];
         });
 
-    const [name, setName] = useState<string>("");
-    const [isRequired, setIsRequired] = useState<boolean>(false);
     const [currentSelectedMenus, setCurrentSelectedMenus] = useState<SelectType[] | null>([]);
+    const [updatedAddonCategory, setUpdatedAddonCategory] = useState<UpdateAddonCategoryOption>();
 
     useEffect(() => {
         if (addonCategory) {
-            setName(addonCategory.name);
-            setIsRequired(addonCategory.isRequired);
+            setUpdatedAddonCategory({
+                id: addonCategory.id,
+                name: addonCategory.name,
+                menuIds: selectedMenus.map((menu) => menu.id),
+                isRequired: addonCategory.isRequired,
+            });
         }
         setCurrentSelectedMenus(selectedMenus);
-    }, [addonCategory?.name, addonCategoryId, menuAddonCategories, menus]);
+    }, [addonCategory, addonCategoryId, menuAddonCategories, menus]);
 
-    const onSuccess = () => {
-        router.push("/backoffice/addon-categories");
+    const onSuccess = () => router.push("/backoffice/addon-categories");
+
+    // check valid data, else return and render agains
+    if (!updatedAddonCategory || !currentSelectedMenus) return;
+
+    const handleUpdateAddonCategory = () => {
+        const menuIds = currentSelectedMenus.map((menu) => menu.id);
+        dispatch(updateAddonCategory({ ...updatedAddonCategory, menuIds, onSuccess }));
     };
-
-    const handleUpdateMenuCategory = () => {
-        if (!name || !currentSelectedMenus?.length) {
-            setErrorMessage([]);
-            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
-            !currentSelectedMenus?.length &&
-                setErrorMessage((prevState) => [...prevState, "menus field required"]);
-            return;
-        } else {
-            const menuIds = currentSelectedMenus?.map((menu) => menu.id);
-            dispatch(updateAddonCategory({ id: addonCategoryId, name, menuIds, isRequired, onSuccess }));
-        }
-    };
-
-    if (!name || !currentSelectedMenus) return;
 
     return (
         <Box>
@@ -81,8 +73,10 @@ const EditAddonCategoryPage = () => {
                     id="name-input"
                     label="name"
                     variant="outlined"
-                    value={name}
-                    onChange={(evt) => setName(evt.target.value)}
+                    value={updatedAddonCategory.name}
+                    onChange={(evt) =>
+                        setUpdatedAddonCategory({ ...updatedAddonCategory, name: evt.target.value })
+                    }
                 />
                 <MultiSelectInput
                     items={menus}
@@ -92,16 +86,27 @@ const EditAddonCategoryPage = () => {
                 />
                 <FormControlLabel
                     control={
-                        <Switch checked={isRequired} onChange={(evt) => setIsRequired(evt.target.checked)} />
+                        <Switch
+                            checked={updatedAddonCategory.isRequired}
+                            onChange={(evt) =>
+                                setUpdatedAddonCategory({
+                                    ...updatedAddonCategory,
+                                    isRequired: evt.target.checked,
+                                })
+                            }
+                        />
                     }
                     label="Required"
                 />
-                {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
                 <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
                     <Button variant="outlined" onClick={() => router.push("/backoffice/addon-categories")}>
                         Cancel
                     </Button>
-                    <Button variant="contained" onClick={handleUpdateMenuCategory}>
+                    <Button
+                        variant="contained"
+                        onClick={handleUpdateAddonCategory}
+                        disabled={updatedAddonCategory.name && currentSelectedMenus.length ? false : true}
+                    >
                         Update
                     </Button>
                 </Box>

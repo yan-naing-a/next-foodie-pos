@@ -1,7 +1,7 @@
-import InputErrorMessage from "@/components/InputErrorMessage";
 import SingleSelectInput from "@/components/selectInput/SingleSelectInput";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateAddon } from "@/store/slices/addonSlice";
+import { UpdateAddonOption } from "@/types/addon";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -17,56 +17,37 @@ const EditAddonPage = () => {
     const params = useParams();
     const addonId = params && Number(params.id);
     const dispatch = useAppDispatch();
-    //error message
-    const [errorMessage, setErrorMessage] = useState<string[]>([]);
     //addon
     const addons = useAppSelector((state) => state.addon.items);
     const addon = addons.find((item) => item.id === addonId);
     //addon categories
     const addonCategories = useAppSelector((state) => state.addonCategory.items);
 
-    const [name, setName] = useState<string>("");
-    const [price, setPrice] = useState<number>();
+    const [updatedAddon, setUpdatedAddon] = useState<UpdateAddonOption>();
     const [selectedAddonCategory, setSelectedAddonCategory] = useState<SelectType | null>(null);
 
     useEffect(() => {
-        if (addon) {
-            setName(addon.name);
-            setPrice(addon.price);
-        }
+        addon && updateAddon({ id: addonId, name: addon.name, price: addon.price });
         if (addonCategories.length && addon) {
-            setSelectedAddonCategory(
-                addonCategories.find((item) => item.id === addon.addonCategoryId) || null,
-            );
+            const singleAddonCategory = addonCategories.find((item) => item.id === addon.addonCategoryId);
+            setSelectedAddonCategory(singleAddonCategory || null);
         }
-    }, [addon?.name, addonId, addonCategories]);
+    }, [addon, addonId, addonCategories]);
 
-    const onSuccess = () => {
-        router.push("/backoffice/addons");
-    };
+    // if not valid, return back
+    if (!updatedAddon?.name || selectedAddonCategory === null) return;
+
+    const onSuccess = () => router.push("/backoffice/addons");
 
     const handleUpdateAddon = () => {
-        if (!name || price === undefined || selectedAddonCategory === null) {
-            setErrorMessage([]);
-            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
-            price === undefined && setErrorMessage((prevState) => [...prevState, "price field required"]);
-            !selectedAddonCategory &&
-                setErrorMessage((prevState) => [...prevState, "addon category field required"]);
-            return;
-        } else {
-            dispatch(
-                updateAddon({
-                    id: addonId,
-                    name,
-                    price,
-                    addonCategoryId: selectedAddonCategory.id,
-                    onSuccess,
-                }),
-            );
-        }
+        dispatch(
+            updateAddon({
+                ...updatedAddon,
+                addonCategoryId: selectedAddonCategory.id,
+                onSuccess,
+            }),
+        );
     };
-
-    if (!name || selectedAddonCategory === null) return;
 
     return (
         <Box>
@@ -83,17 +64,17 @@ const EditAddonPage = () => {
                     id="name-input"
                     label="name"
                     variant="outlined"
-                    value={name}
-                    onChange={(evt) => setName(evt.target.value)}
+                    value={updatedAddon.name}
+                    onChange={(evt) => setUpdatedAddon({ ...updatedAddon, name: evt.target.value })}
                 />
                 <TextField
                     id="price-input"
                     label="price"
                     variant="outlined"
                     type="number"
-                    value={price}
+                    value={updatedAddon.price}
                     slotProps={{ htmlInput: { min: 0 } }}
-                    onChange={(evt) => setPrice(Number(evt.target.value))}
+                    onChange={(evt) => setUpdatedAddon({ ...updatedAddon, price: Number(evt.target.value) })}
                 />
                 <SingleSelectInput
                     items={addonCategories}
@@ -101,12 +82,19 @@ const EditAddonPage = () => {
                     value={selectedAddonCategory}
                     setValue={setSelectedAddonCategory}
                 />
-                {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
                 <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
                     <Button variant="outlined" onClick={() => router.push("/backoffice/tables")}>
                         Cancel
                     </Button>
-                    <Button variant="contained" onClick={handleUpdateAddon}>
+                    <Button
+                        variant="contained"
+                        onClick={handleUpdateAddon}
+                        disabled={
+                            updatedAddon.name && updatedAddon.price !== undefined && updatedAddon.addonCategoryId
+                                ? false
+                                : true
+                        }
+                    >
                         Update
                     </Button>
                 </Box>

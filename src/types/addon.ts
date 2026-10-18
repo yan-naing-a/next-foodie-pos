@@ -14,14 +14,14 @@ interface BaseOption {
 export interface CreateAddonOption extends BaseOption {
   name: string;
   price: number;
-  addonCategoryId: number;
+  addonCategoryId?: number;
 }
 
 export interface UpdateAddonOption extends BaseOption {
   id: number;
   name: string;
   price: number;
-  addonCategoryId: number;
+  addonCategoryId?: number;
 }
 export interface DeleteAddonOption extends BaseOption {
   id: number;

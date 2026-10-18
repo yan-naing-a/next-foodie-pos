@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createAddonCategory } from "@/store/slices/addonCategorySlice";
+import { CreateAddonCategoryOption } from "@/types/addonCategory";
 import {
     Box,
     Button,
@@ -23,36 +24,43 @@ interface SelectType {
     id: number;
     name: string;
 }
+const defaultAddonCategory: CreateAddonCategoryOption = {
+    name: "",
+    menuIds: [],
+    isRequired: false,
+};
 
 const CreateAddonCategory = ({ open, setOpen }: Props) => {
-    const [name, setName] = useState<string | null>(null);
     const [selectedMenus, setSelectedMenus] = useState<SelectType[] | null>([]);
-    const [isRequired, setIsRequired] = useState<boolean>(false);
+    const [addonCategory, setAddonCategory] =
+        useState<CreateAddonCategoryOption>(defaultAddonCategory);
     const [errorMessage, setErrorMessage] = useState<string[]>([]);
     const menus = useAppSelector((state) => state.menu.items);
     const dispatch = useAppDispatch();
 
     const clearInput = () => {
-        setName("");
+        setAddonCategory(defaultAddonCategory);
         setSelectedMenus([]);
-        setIsRequired(false);
-    };
-
-    const onSuccess = () => {
-        clearInput();
+        setErrorMessage([]);
         setOpen(false);
     };
 
     const handleCreateAddonCategory = () => {
-        if (!name || !selectedMenus?.length) {
+        if (!addonCategory.name || !selectedMenus?.length) {
             setErrorMessage([]);
-            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
+            !addonCategory.name && setErrorMessage((prevState) => [...prevState, "name field required"]);
             !selectedMenus?.length &&
                 setErrorMessage((prevState) => [...prevState, "menus field required"]);
             return;
         }
         const menuIds = selectedMenus.map((selectedMenu) => selectedMenu.id);
-        dispatch(createAddonCategory({ name, menuIds, isRequired, onSuccess }));
+        dispatch(
+            createAddonCategory({
+                ...addonCategory,
+                menuIds,
+                onSuccess: () => clearInput(),
+            }),
+        );
     };
 
     if (!menus.length) return;
@@ -60,11 +68,7 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
     return (
         <Dialog
             open={open}
-            onClose={() => {
-                setErrorMessage([]);
-                clearInput();
-                setOpen(false);
-            }}
+            onClose={clearInput}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
             role="alertdialog"
@@ -77,7 +81,8 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
                     id="name-input"
                     label="name"
                     variant="outlined"
-                    onChange={(evt) => setName(evt.target.value)}
+                    value={addonCategory.name}
+                    onChange={(evt) => setAddonCategory({ ...addonCategory, name: evt.target.value })}
                 />
                 <MultiSelectInput
                     items={menus}
@@ -86,20 +91,23 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
                     setValues={setSelectedMenus}
                 />
                 <FormControlLabel
-                    control={<Switch onChange={(evt) => setIsRequired(evt.target.checked)} />}
+                    control={
+                        <Switch
+                            checked={addonCategory.isRequired}
+                            onChange={(evt) =>
+                                setAddonCategory({
+                                    ...addonCategory,
+                                    isRequired: evt.target.checked,
+                                })
+                            }
+                        />
+                    }
                     label="Required"
                 />
-                {!!errorMessage && <InputErrorMessage errorMessage={errorMessage} />}
+                {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
             <DialogActions sx={{ padding: 3 }}>
-                <Button
-                    onClick={() => {
-                        setErrorMessage([]);
-                        clearInput();
-                        setOpen(false);
-                    }}
-                    autoFocus
-                >
+                <Button onClick={clearInput} autoFocus>
                     Cancel
                 </Button>
                 <Button onClick={handleCreateAddonCategory} variant="contained">
