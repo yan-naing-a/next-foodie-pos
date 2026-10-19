@@ -1,9 +1,17 @@
-import { CreateMenuOption, MenuState, UpdateMenuOption } from "@/types/menu";
+import { CreateMenuOption, DeleteMenuOption, MenuState, UpdateMenuOption } from "@/types/menu";
 import config from "@/utils/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Menu } from "../../../generated/prisma/client";
-import { addMenuAddonCategories, editMenuAddonCategoriesByMenu } from "./menuAddonCategorySlice";
-import { addMenuCategoryMenus, editMenuCategoryMenusByMenu } from "./menuCategoryMenuSlice";
+import {
+  addMenuAddonCategories,
+  editMenuAddonCategoriesByMenu,
+  removeMenuAddonCategoriesByMenu,
+} from "./menuAddonCategorySlice";
+import {
+  addMenuCategoryMenus,
+  editMenuCategoryMenusByMenu,
+  removeMenuCategoryMenusByMenu,
+} from "./menuCategoryMenuSlice";
 
 const initialState: MenuState = {
   items: [],
@@ -92,6 +100,25 @@ export const updateMenu = createAsyncThunk(
     }
   },
 );
+export const deleteMenu = createAsyncThunk(
+  "menu/deleteMenu",
+  async (payload: DeleteMenuOption, thunkAPI) => {
+    const { id, onSuccess, onError } = payload;
+
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/menu?id=${id}`, { method: "DELETE" });
+      const { msg } = await response.json();
+
+      thunkAPI.dispatch(removeMenu(id));
+      thunkAPI.dispatch(removeMenuCategoryMenusByMenu({ id }));
+      thunkAPI.dispatch(removeMenuAddonCategoriesByMenu({ id }));
+      onSuccess && onSuccess();
+    } catch (err) {
+      console.log("reach to error code");
+      onError && onError(err);
+    }
+  },
+);
 
 export const menuSlice = createSlice({
   name: "menu",
@@ -108,10 +135,13 @@ export const menuSlice = createSlice({
         menu.id === action.payload.id ? action.payload : menu,
       );
     },
+    removeMenu: (state, action: PayloadAction<number>) => {
+      state.items = state.items.filter((item) => item.id !== action.payload);
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setMenus, addMenu, editMenu } = menuSlice.actions;
+export const { setMenus, addMenu, editMenu, removeMenu } = menuSlice.actions;
 
 export default menuSlice.reducer;

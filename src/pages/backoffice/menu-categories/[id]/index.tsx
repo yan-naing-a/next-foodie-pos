@@ -1,6 +1,6 @@
 import MultipleSelectInput from "@/components/selectInput/MultiSelectInput";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { updateMenuCategory } from "@/store/slices/menuCategorySlice";
+import { deleteMenuCategory, updateMenuCategory } from "@/store/slices/menuCategorySlice";
 import { UpdateMenuCategoryOption } from "@/types/menuCategory";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -50,10 +50,14 @@ const EditMenuCategoryPage = () => {
         dispatch(updateMenuCategory({ ...updatedMenuCategory, menuIds, onSuccess }));
     };
 
+    const handleDeleteMenuCategory = () => {
+        dispatch(deleteMenuCategory({ id: menuCategoryId, onSuccess }));
+    };
+
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error">
+                <Button variant="contained" color="error" onClick={handleDeleteMenuCategory}>
                     Delete
                 </Button>
             </Box>

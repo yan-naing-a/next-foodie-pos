@@ -1,7 +1,7 @@
 import InputErrorMessage from "@/components/InputErrorMessage";
 import MultipleSelectInput from "@/components/selectInput/MultiSelectInput";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { updateMenu } from "@/store/slices/menuSlice";
+import { deleteMenu, updateMenu } from "@/store/slices/menuSlice";
 import { UpdateMenuOption } from "@/types/menu";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -86,10 +86,14 @@ const EditMenuPage = () => {
         );
     };
 
+    const handleDeleteMenu = () => {
+        dispatch(deleteMenu({ id: menuId, onSuccess: () => router.push("/backoffice/menus") }));
+    };
+
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error">
+                <Button variant="contained" color="error" onClick={handleDeleteMenu}>
                     Delete
                 </Button>
             </Box>

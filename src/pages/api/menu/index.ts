@@ -171,6 +171,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
         },
       });
     }
+    // DELETE //
+    else if (method === HttpMethod.delete) {
+      const { id } = req.query;
+      const validMenu = await prisma.menu.findFirst({ where: { id: Number(id) } });
+      if (!validMenu) return res.status(404).json({ msg: "Menu not found" });
+
+      await prisma.menu.update({ data: { isArchived: true }, where: { id: Number(id) } });
+      await prisma.menuCategoryMenu.updateMany({
+        data: { isArchived: true },
+        where: { menuId: Number(id) },
+      });
+      await prisma.menuAddonCategory.updateMany({
+        data: { isArchived: true },
+        where: { menuId: Number(id) },
+      });
+
+      return res.status(200).json({ msg: "Menu Deleted" });
+    }
   } else {
     return res.status(401).json({ msg: "Unauthorized" });
   }

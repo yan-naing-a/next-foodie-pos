@@ -1,6 +1,6 @@
 import MultiSelectInput from "@/components/selectInput/MultiSelectInput";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { updateAddonCategory } from "@/store/slices/addonCategorySlice";
+import { deleteAddonCategory, updateAddonCategory } from "@/store/slices/addonCategorySlice";
 import { UpdateAddonCategoryOption } from "@/types/addonCategory";
 import { Box, Button, FormControlLabel, Switch, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -58,10 +58,14 @@ const EditAddonCategoryPage = () => {
         dispatch(updateAddonCategory({ ...updatedAddonCategory, menuIds, onSuccess }));
     };
 
+    const handleDeleteAddonCategory = () => {
+        dispatch(deleteAddonCategory({ id: addonCategoryId, onSuccess }));
+    };
+
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error">
+                <Button variant="contained" color="error" onClick={handleDeleteAddonCategory}>
                     Delete
                 </Button>
             </Box>

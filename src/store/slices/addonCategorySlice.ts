@@ -1,6 +1,7 @@
 import {
   AddonCategoryState,
   CreateAddonCategoryOption,
+  DeleteAddonCategoryOption,
   UpdateAddonCategoryOption,
 } from "@/types/addonCategory";
 import config from "@/utils/config";
@@ -9,6 +10,7 @@ import { AddonCategory } from "../../../generated/prisma/client";
 import {
   addMenuAddonCategories,
   editMenuAddonCategoriesByAddonCategory,
+  removeMenuAddonCategoriesByAddonCategory,
 } from "./menuAddonCategorySlice";
 
 const initialState: AddonCategoryState = {
@@ -64,6 +66,23 @@ export const updateAddonCategory = createAsyncThunk(
     }
   },
 );
+export const deleteAddonCategory = createAsyncThunk(
+  "addonCategory/deleteAddonCategory",
+  async (payload: DeleteAddonCategoryOption, thunkAPI) => {
+    const { id, onSuccess, onError } = payload;
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/addon-category?id=${id}`, {
+        method: "DELETE",
+      });
+      const { msg } = await response.json();
+      thunkAPI.dispatch(removeAddonCategories(id));
+      thunkAPI.dispatch(removeMenuAddonCategoriesByAddonCategory({ id }));
+      onSuccess && onSuccess();
+    } catch (err) {
+      onError && onError(err);
+    }
+  },
+);
 
 export const addonCategorySlice = createSlice({
   name: "addonCategory",
@@ -80,11 +99,18 @@ export const addonCategorySlice = createSlice({
         item.id === action.payload.id ? action.payload : item,
       );
     },
+    removeAddonCategories: (state, action: PayloadAction<number>) => {
+      state.items = state.items.filter((item) => item.id !== action.payload);
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setAddonCategories, addAddonCategories, editAddonCategories } =
-  addonCategorySlice.actions;
+export const {
+  setAddonCategories,
+  addAddonCategories,
+  editAddonCategories,
+  removeAddonCategories,
+} = addonCategorySlice.actions;
 
 export default addonCategorySlice.reducer;

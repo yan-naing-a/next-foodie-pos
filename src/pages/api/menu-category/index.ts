@@ -102,6 +102,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
         data: { menuCategory: updatedMenuCategory, menuCategoryMenus: updatedMenuCategoryMenus },
       });
     }
+    //DELETE//
+    else if (method === HttpMethod.delete) {
+      const { id } = req.query;
+
+      const validMenuCategory = await prisma.menuCategory.findFirst({ where: { id: Number(id) } });
+      if (!validMenuCategory) return res.status(404).json({ msg: "Menu Category not found" });
+
+      await prisma.menuCategory.update({ data: { isArchived: true }, where: { id: Number(id) } });
+      await prisma.menuCategoryMenu.updateMany({
+        data: { isArchived: true },
+        where: { menuCategoryId: Number(id) },
+      });
+
+      return res.status(200).json({ msg: "Menu Category Deleted" });
+    }
   } else {
     return res.status(401).json({ msg: "Unauthorized" });
   }

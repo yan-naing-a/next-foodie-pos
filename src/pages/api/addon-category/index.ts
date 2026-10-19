@@ -97,6 +97,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
         },
       });
     }
+    //DELETE//
+    else if (method === HttpMethod.delete) {
+      const { id } = req.query;
+      const validAddonCategory = await prisma.addonCategory.findFirst({
+        where: { id: Number(id) },
+      });
+      if (!validAddonCategory) return res.status(404).json({ msg: "Addon Category not found" });
+
+      await prisma.addonCategory.update({ data: { isArchived: true }, where: { id: Number(id) } });
+      await prisma.menuAddonCategory.updateMany({
+        data: { isArchived: true },
+        where: { addonCategoryId: Number(id) },
+      });
+
+      return res.status(200).json({ msg: "Addon Category Deleted" });
+    }
   } else {
     return res.status(401).json({ msg: "Unauthorized" });
   }

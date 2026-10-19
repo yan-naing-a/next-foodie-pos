@@ -1,4 +1,8 @@
-import { EditMenuAddonCategory, MenuAddonCategoryState } from "@/types/menuAddonCategory";
+import {
+  EditMenuAddonCategory,
+  MenuAddonCategoryState,
+  RemoveMenuAddonCategory,
+} from "@/types/menuAddonCategory";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { MenuAddonCategory } from "../../../generated/prisma/client";
 
@@ -33,6 +37,15 @@ export const menuAddonCategorySlice = createSlice({
       );
       state.items = [...remainingMenuAddonCategories, ...action.payload.items];
     },
+    removeMenuAddonCategoriesByMenu: (state, action: PayloadAction<RemoveMenuAddonCategory>) => {
+      state.items = state.items.filter((item) => item.menuId !== action.payload.id);
+    },
+    removeMenuAddonCategoriesByAddonCategory: (
+      state,
+      action: PayloadAction<RemoveMenuAddonCategory>,
+    ) => {
+      state.items = state.items.filter((item) => item.addonCategoryId !== action.payload.id);
+    },
   },
 });
 
@@ -42,6 +55,8 @@ export const {
   addMenuAddonCategories,
   editMenuAddonCategoriesByMenu,
   editMenuAddonCategoriesByAddonCategory,
+  removeMenuAddonCategoriesByAddonCategory,
+  removeMenuAddonCategoriesByMenu,
 } = menuAddonCategorySlice.actions;
 
 export default menuAddonCategorySlice.reducer;

@@ -10,3 +10,6 @@ export interface EditMenuCategoryMenu {
   id: number;
   items: MenuCategoryMenu[];
 }
+export interface RemoveMenuCategoryMenu {
+  id: number;
+}

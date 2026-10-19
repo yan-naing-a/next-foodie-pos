@@ -1,12 +1,17 @@
 import {
   CreateMenuCategoryOption,
+  DeleteMenuCategoryOption,
   MenuCategoryState,
   UpdateMenuCategoryOption,
 } from "@/types/menuCategory";
 import config from "@/utils/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { MenuCategory } from "../../../generated/prisma/client";
-import { addMenuCategoryMenus, editMenuCategoryMenusByMenuCategory } from "./menuCategoryMenuSlice";
+import {
+  addMenuCategoryMenus,
+  editMenuCategoryMenusByMenuCategory,
+  removeMenuCategoryMenusByMenuCategory,
+} from "./menuCategoryMenuSlice";
 
 const initialState: MenuCategoryState = {
   items: [],
@@ -56,6 +61,23 @@ export const updateMenuCategory = createAsyncThunk(
     }
   },
 );
+export const deleteMenuCategory = createAsyncThunk(
+  "menuCategory/deleteMenuCategory",
+  async (payload: DeleteMenuCategoryOption, thunkAPI) => {
+    const { id, onSuccess, onError } = payload;
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/menu-category?id=${id}`, {
+        method: "DELETE",
+      });
+      const { msg } = await response.json();
+      thunkAPI.dispatch(removeMenuCategory(id));
+      thunkAPI.dispatch(removeMenuCategoryMenusByMenuCategory({ id }));
+      onSuccess && onSuccess();
+    } catch (err) {
+      onError && onError(err);
+    }
+  },
+);
 
 export const menuCategorySlice = createSlice({
   name: "menuCategory",
@@ -72,10 +94,14 @@ export const menuCategorySlice = createSlice({
         item.id === action.payload.id ? action.payload : item,
       );
     },
+    removeMenuCategory: (state, action: PayloadAction<number>) => {
+      state.items = state.items.filter((item) => item.id !== action.payload);
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setMenuCategories, addMenuCategory, editMenuCategory } = menuCategorySlice.actions;
+export const { setMenuCategories, addMenuCategory, editMenuCategory, removeMenuCategory } =
+  menuCategorySlice.actions;
 
 export default menuCategorySlice.reducer;

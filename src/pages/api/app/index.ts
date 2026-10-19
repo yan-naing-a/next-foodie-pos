@@ -119,36 +119,42 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
         return res.status(400).json({ msg: "Bad Request" });
       }
       //2. location
-      const locations = await prisma.location.findMany({ where: { companyId: company.id } });
+      const locations = await prisma.location.findMany({
+        where: { companyId: company.id, isArchived: false },
+      });
       const locationIds = locations.map((location) => location.id);
       //3. table
-      const tables = await prisma.table.findMany({ where: { locationId: { in: locationIds } } });
+      const tables = await prisma.table.findMany({
+        where: { locationId: { in: locationIds }, isArchived: false },
+      });
       //4. menuCategory
       const menuCategories = await prisma.menuCategory.findMany({
-        where: { companyId: company.id },
+        where: { companyId: company.id, isArchived: false },
       });
       const menuCategoryIds = menuCategories.map((menuCategory) => menuCategory.id);
       //5. menuCategoryMenu
       const menuCategoryMenus = await prisma.menuCategoryMenu.findMany({
-        where: { menuCategoryId: { in: menuCategoryIds } },
+        where: { menuCategoryId: { in: menuCategoryIds }, isArchived: false },
       });
       const menuIds = menuCategoryMenus.map((menuCategoryMenu) => menuCategoryMenu.menuId);
       //5. menu
-      const menus = await prisma.menu.findMany({ where: { id: { in: menuIds } } });
+      const menus = await prisma.menu.findMany({
+        where: { id: { in: menuIds }, isArchived: false },
+      });
       //6. menuAddonCategory
       const menuAddonCategories = await prisma.menuAddonCategory.findMany({
-        where: { menuId: { in: menuIds } },
+        where: { menuId: { in: menuIds }, isArchived: false },
       });
       const addonCategoryIds = menuAddonCategories.map(
         (MenuAddonCategory) => MenuAddonCategory.addonCategoryId,
       );
       //7. addonCategory
       const addonCategories = await prisma.addonCategory.findMany({
-        where: { id: { in: addonCategoryIds } },
+        where: { id: { in: addonCategoryIds }, isArchived: false },
       });
       //8. addon
       const addons = await prisma.addon.findMany({
-        where: { addonCategoryId: { in: addonCategoryIds } },
+        where: { addonCategoryId: { in: addonCategoryIds }, isArchived: false },
       });
       return res.status(200).json({
         msg: "Success",
