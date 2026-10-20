@@ -1,6 +1,7 @@
-import InputErrorMessage from "@/components/InputErrorMessage";
+import WarningAlert from "@/components/WarningAlert";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteTable, updateTable } from "@/store/slices/tableSlice";
+import { UpdateTableOption } from "@/types/table";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -16,40 +17,31 @@ const EditTablePage = () => {
     const params = useParams();
     const tableId = params && Number(params.id);
     const dispatch = useAppDispatch();
-    //error message
-    const [errorMessage, setErrorMessage] = useState<string[]>([]);
+    //open delete location dialog
+    const [open, setOpen] = useState<boolean>(false);
     //table
     const tables = useAppSelector((state) => state.table.items);
     const table = tables.find((item) => item.id === tableId);
 
-    const [name, setName] = useState<string>("");
+    const [updatedTable, setUpdatedTable] = useState<UpdateTableOption>();
 
     useEffect(() => {
-        table && setName(table.name);
+        table && setUpdatedTable({ id: table.id, name: table.name, locationId: table.locationId });
     }, [table, tableId]);
+
+    //if not valid ,return back
+    if (!updatedTable) return;
 
     const onSuccess = () => router.push("/backoffice/tables");
 
-    console.log("name: ", name);
-    console.log("location id: ", table?.id);
-    //if not valid ,return back
-    if (!name && !table?.locationId) return;
-
-    const handleUpdateMenuCategory = () => {
-        if (!name || !table?.locationId) {
-            setErrorMessage([]);
-            !name && setErrorMessage((prevState) => [...prevState, "name field required"]);
-            return;
-        }
-        dispatch(updateTable({ id: tableId, name, locationId: table?.locationId, onSuccess }));
-    };
+    const handleUpdateMenuCategory = () => dispatch(updateTable({ ...updatedTable, onSuccess }));
 
     const handleDeleteTable = () => dispatch(deleteTable({ id: tableId, onSuccess }));
 
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error" onClick={handleDeleteTable}>
+                <Button variant="contained" color="error" onClick={() => setOpen(true)}>
                     Delete
                 </Button>
             </Box>
@@ -61,10 +53,9 @@ const EditTablePage = () => {
                     id="name-input"
                     label="name"
                     variant="outlined"
-                    value={name}
-                    onChange={(evt) => setName(evt.target.value)}
+                    value={updatedTable.name}
+                    onChange={(evt) => setUpdatedTable({ ...updatedTable, name: evt.target.value })}
                 />
-                {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
                 <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
                     <Button variant="outlined" onClick={() => router.push("/backoffice/tables")}>
                         Cancel
@@ -72,12 +63,18 @@ const EditTablePage = () => {
                     <Button
                         variant="contained"
                         onClick={handleUpdateMenuCategory}
-                        disabled={name ? false : true}
+                        disabled={updatedTable.name ? false : true}
                     >
                         Update
                     </Button>
                 </Box>
             </Box>
+            <WarningAlert
+                open={open}
+                setOpen={setOpen}
+                label={updatedTable.name}
+                handleDeleteData={handleDeleteTable}
+            />
         </Box>
     );
 };

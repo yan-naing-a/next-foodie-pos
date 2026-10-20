@@ -1,5 +1,5 @@
-import InputErrorMessage from "@/components/InputErrorMessage";
 import MultipleSelectInput from "@/components/selectInput/MultiSelectInput";
+import WarningAlert from "@/components/WarningAlert";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteMenu, updateMenu } from "@/store/slices/menuSlice";
 import { UpdateMenuOption } from "@/types/menu";
@@ -18,8 +18,8 @@ const EditMenuPage = () => {
     const params = useParams();
     const menuId = params && Number(params.id);
     const dispatch = useAppDispatch();
-    //error message
-    const [errorMessage, setErrorMessage] = useState<string[]>([]);
+    //open delete menu dialog
+    const [open, setOpen] = useState<boolean>(false);
     //menu
     const menus = useAppSelector((state) => state.menu.items);
     const menu = menus.find((item) => item.id === menuId);
@@ -93,7 +93,7 @@ const EditMenuPage = () => {
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error" onClick={handleDeleteMenu}>
+                <Button variant="contained" color="error" onClick={() => setOpen(true)}>
                     Delete
                 </Button>
             </Box>
@@ -140,7 +140,6 @@ const EditMenuPage = () => {
                     values={currentSelectedAddonCategories}
                     setValues={setCurrentSelectedAddonCategories}
                 />
-                {!!errorMessage && <InputErrorMessage errorMessage={errorMessage} />}
                 <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
                     <Button variant="outlined" onClick={() => router.push("/backoffice/menus")}>
                         Cancel
@@ -160,6 +159,12 @@ const EditMenuPage = () => {
                     </Button>
                 </Box>
             </Box>
+            <WarningAlert
+                open={open}
+                setOpen={setOpen}
+                label={updatedMenu.name}
+                handleDeleteData={handleDeleteMenu}
+            />
         </Box>
     );
 };

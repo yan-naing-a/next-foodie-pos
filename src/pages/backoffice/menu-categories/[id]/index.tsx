@@ -1,4 +1,5 @@
 import MultipleSelectInput from "@/components/selectInput/MultiSelectInput";
+import WarningAlert from "@/components/WarningAlert";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteMenuCategory, updateMenuCategory } from "@/store/slices/menuCategorySlice";
 import { UpdateMenuCategoryOption } from "@/types/menuCategory";
@@ -17,6 +18,8 @@ const EditMenuCategoryPage = () => {
     const params = useParams();
     const menuCategoryId = params && Number(params.id);
     const dispatch = useAppDispatch();
+    //open delete menu category dialog
+    const [open, setOpen] = useState<boolean>(false);
     //menuCategory
     const menuCategories = useAppSelector((state) => state.menuCategory.items);
     const menuCategory = menuCategories.find((item) => item.id === menuCategoryId);
@@ -57,7 +60,7 @@ const EditMenuCategoryPage = () => {
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error" onClick={handleDeleteMenuCategory}>
+                <Button variant="contained" color="error" onClick={() => setOpen(true)}>
                     Delete
                 </Button>
             </Box>
@@ -93,6 +96,12 @@ const EditMenuCategoryPage = () => {
                     </Button>
                 </Box>
             </Box>
+            <WarningAlert
+                open={open}
+                setOpen={setOpen}
+                label={updatedMenuCategory.name}
+                handleDeleteData={handleDeleteMenuCategory}
+            />
         </Box>
     );
 };

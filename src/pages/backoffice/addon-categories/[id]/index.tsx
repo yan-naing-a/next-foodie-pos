@@ -1,4 +1,5 @@
 import MultiSelectInput from "@/components/selectInput/MultiSelectInput";
+import WarningAlert from "@/components/WarningAlert";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteAddonCategory, updateAddonCategory } from "@/store/slices/addonCategorySlice";
 import { UpdateAddonCategoryOption } from "@/types/addonCategory";
@@ -17,6 +18,8 @@ const EditAddonCategoryPage = () => {
     const params = useParams();
     const addonCategoryId = params && Number(params.id);
     const dispatch = useAppDispatch();
+    //open delete addon category dialog
+    const [open, setOpen] = useState<boolean>(false);
     //addon category
     const addonCategories = useAppSelector((state) => state.addonCategory.items);
     const addonCategory = addonCategories.find((item) => item.id === addonCategoryId);
@@ -65,7 +68,7 @@ const EditAddonCategoryPage = () => {
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error" onClick={handleDeleteAddonCategory}>
+                <Button variant="contained" color="error" onClick={() => setOpen(true)}>
                     Delete
                 </Button>
             </Box>
@@ -115,6 +118,12 @@ const EditAddonCategoryPage = () => {
                     </Button>
                 </Box>
             </Box>
+            <WarningAlert
+                open={open}
+                setOpen={setOpen}
+                label={updatedAddonCategory.name}
+                handleDeleteData={handleDeleteAddonCategory}
+            />
         </Box>
     );
 };

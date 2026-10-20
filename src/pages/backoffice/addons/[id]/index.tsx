@@ -1,4 +1,5 @@
 import SingleSelectInput from "@/components/selectInput/SingleSelectInput";
+import WarningAlert from "@/components/WarningAlert";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteAddon, updateAddon } from "@/store/slices/addonSlice";
 import { UpdateAddonOption } from "@/types/addon";
@@ -17,6 +18,8 @@ const EditAddonPage = () => {
     const params = useParams();
     const addonId = params && Number(params.id);
     const dispatch = useAppDispatch();
+    //open delete addon dialog
+    const [open, setOpen] = useState<boolean>(false);
     //addon
     const addons = useAppSelector((state) => state.addon.items);
     const addon = addons.find((item) => item.id === addonId);
@@ -49,7 +52,7 @@ const EditAddonPage = () => {
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error" onClick={handleDeleteAddon}>
+                <Button variant="contained" color="error" onClick={() => setOpen(true)}>
                     Delete
                 </Button>
             </Box>
@@ -96,6 +99,12 @@ const EditAddonPage = () => {
                     </Button>
                 </Box>
             </Box>
+            <WarningAlert
+                open={open}
+                setOpen={setOpen}
+                label={updatedAddon.name}
+                handleDeleteData={handleDeleteAddon}
+            />
         </Box>
     );
 };

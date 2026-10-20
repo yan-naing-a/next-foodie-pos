@@ -1,3 +1,4 @@
+import WarningAlert from "@/components/WarningAlert";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteLocation, updateLocation } from "@/store/slices/locationSlice";
 import { UpdateLocationOption } from "@/types/location";
@@ -11,6 +12,8 @@ const EditLocationPage = () => {
     const params = useParams();
     const locationId = params && Number(params.id);
     const dispatch = useAppDispatch();
+    //open delete location dialog
+    const [open, setOpen] = useState<boolean>(false);
     //location
     const locations = useAppSelector((state) => state.location.items);
     const location = locations.find((item) => item.id === locationId);
@@ -33,7 +36,7 @@ const EditLocationPage = () => {
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error" onClick={handleDeleteLocation}>
+                <Button variant="contained" color="error" onClick={() => setOpen(true)}>
                     Delete
                 </Button>
             </Box>
@@ -68,6 +71,12 @@ const EditLocationPage = () => {
                     </Button>
                 </Box>
             </Box>
+            <WarningAlert
+                open={open}
+                setOpen={setOpen}
+                label={updatedLocation.name}
+                handleDeleteData={handleDeleteLocation}
+            />
         </Box>
     );
 };
