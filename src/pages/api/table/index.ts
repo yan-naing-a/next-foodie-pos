@@ -44,6 +44,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
       });
       return res.status(200).json({ msg: "Table Updated", data: updatedTable });
     }
+    // DELETE //
+    else if (method === HttpMethod.delete) {
+      const { id } = req.query;
+
+      const validTable = await prisma.table.findFirst({ where: { id: Number(id) } });
+      if (!validTable) return res.status(404).json({ msg: "Table not found" });
+
+      await prisma.table.update({ data: { isArchived: true }, where: { id: Number(id) } });
+
+      return res.status(200).json({ msg: "Table Deleted" });
+    }
   } else {
     return res.status(401).json({ msg: "Unauthorized" });
   }

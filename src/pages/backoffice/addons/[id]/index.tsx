@@ -1,6 +1,6 @@
 import SingleSelectInput from "@/components/selectInput/SingleSelectInput";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { updateAddon } from "@/store/slices/addonSlice";
+import { deleteAddon, updateAddon } from "@/store/slices/addonSlice";
 import { UpdateAddonOption } from "@/types/addon";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -40,18 +40,16 @@ const EditAddonPage = () => {
 
     const handleUpdateAddon = () => {
         dispatch(
-            updateAddon({
-                ...updatedAddon,
-                addonCategoryId: selectedAddonCategory.id,
-                onSuccess,
-            }),
+            updateAddon({ ...updatedAddon, addonCategoryId: selectedAddonCategory.id, onSuccess }),
         );
     };
+
+    const handleDeleteAddon = () => dispatch(deleteAddon({ id: addonId, onSuccess }));
 
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error">
+                <Button variant="contained" color="error" onClick={handleDeleteAddon}>
                     Delete
                 </Button>
             </Box>

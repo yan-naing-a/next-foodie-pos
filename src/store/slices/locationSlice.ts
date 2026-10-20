@@ -1,4 +1,9 @@
-import { CreateLocationOption, LocationState, UpdateLocationOption } from "@/types/location";
+import {
+  CreateLocationOption,
+  DeleteLocationOption,
+  LocationState,
+  UpdateLocationOption,
+} from "@/types/location";
 import config from "@/utils/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Location } from "../../../generated/prisma/client";
@@ -49,6 +54,21 @@ export const updateLocation = createAsyncThunk(
     }
   },
 );
+export const deleteLocation = createAsyncThunk(
+  "location/deleteLocation",
+  async (payload: DeleteLocationOption, thunkAPI) => {
+    const { id, onSuccess, onError } = payload;
+
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/location?id=${id}`, { method: "DELETE" });
+      const { msg } = await response.json();
+      thunkAPI.dispatch(removeLocation(id));
+      onSuccess && onSuccess();
+    } catch (error) {
+      onError && onError(error);
+    }
+  },
+);
 
 export const locationSlice = createSlice({
   name: "location",
@@ -65,10 +85,13 @@ export const locationSlice = createSlice({
         item.id === action.payload.id ? action.payload : item,
       );
     },
+    removeLocation: (state, action: PayloadAction<number>) => {
+      state.items = state.items.filter((item) => item.id !== action.payload);
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setLocations, addLocation, editLocation } = locationSlice.actions;
+export const { setLocations, addLocation, editLocation, removeLocation } = locationSlice.actions;
 
 export default locationSlice.reducer;

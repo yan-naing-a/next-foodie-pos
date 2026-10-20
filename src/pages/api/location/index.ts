@@ -44,6 +44,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
       });
       return res.status(200).json({ msg: "Location Updated", data: updatedLocation });
     }
+    // DELETE //
+    if (method === HttpMethod.delete) {
+      const { id } = req.query;
+
+      const validLocation = await prisma.location.findUnique({ where: { id: Number(id) } });
+      if (!validLocation) return res.status(404).json({ msg: "Location Not Found" });
+
+      await prisma.location.update({ data: { isArchived: true }, where: { id: Number(id) } });
+
+      return res.status(200).json({ msg: "Location Deleted" });
+    }
   } else {
     return res.status(401).json({ msg: "Unauthorized" });
   }

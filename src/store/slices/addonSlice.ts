@@ -1,4 +1,4 @@
-import { AddonState, CreateAddonOption, UpdateAddonOption } from "@/types/addon";
+import { AddonState, CreateAddonOption, DeleteAddonOption, UpdateAddonOption } from "@/types/addon";
 import config from "@/utils/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Addon } from "../../../generated/prisma/browser";
@@ -47,6 +47,20 @@ export const updateAddon = createAsyncThunk(
     }
   },
 );
+export const deleteAddon = createAsyncThunk(
+  "addon/deleteAddon",
+  async (payload: DeleteAddonOption, thunkAPI) => {
+    const { id, onSuccess, onError } = payload;
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/addon?id=${id}`, { method: "DELETE" });
+      const { msg } = await response.json();
+      thunkAPI.dispatch(removeAddon(id));
+      onSuccess && onSuccess();
+    } catch (err) {
+      onError && onError(err);
+    }
+  },
+);
 
 export const addonSlice = createSlice({
   name: "addon",
@@ -63,10 +77,13 @@ export const addonSlice = createSlice({
         item.id === action.payload.id ? action.payload : item,
       );
     },
+    removeAddon: (state, action: PayloadAction<number>) => {
+      state.items = state.items.filter((item) => item.id !== action.payload);
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setAddons, addAddon, editAddon } = addonSlice.actions;
+export const { setAddons, addAddon, editAddon, removeAddon } = addonSlice.actions;
 
 export default addonSlice.reducer;

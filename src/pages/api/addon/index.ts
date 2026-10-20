@@ -53,6 +53,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<ReturnData>) =>
       });
       return res.status(200).json({ msg: "Addon Updated", data: updatedAddon });
     }
+    // DELETE //
+    else if (method === HttpMethod.delete) {
+      const { id } = req.query;
+
+      // check addon
+      const validAddon = await prisma.addon.findUnique({ where: { id: Number(id) } });
+      if (!validAddon) return res.status(404).json({ msg: "Addon Not Found" });
+      await prisma.addon.update({ data: { isArchived: true }, where: { id: Number(id) } });
+
+      return res.status(200).json({ msg: "Addon Deleted" });
+    }
   } else {
     return res.status(401).json({ msg: "Unauthorized" });
   }

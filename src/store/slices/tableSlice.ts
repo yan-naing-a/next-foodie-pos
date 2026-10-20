@@ -1,4 +1,4 @@
-import { CreateTableOption, TableState, UpdateTableOption } from "@/types/table";
+import { CreateTableOption, DeleteTableOption, TableState, UpdateTableOption } from "@/types/table";
 import config from "@/utils/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Table } from "../../../generated/prisma/client";
@@ -47,6 +47,20 @@ export const updateTable = createAsyncThunk(
     }
   },
 );
+export const deleteTable = createAsyncThunk(
+  "table/deleteTable",
+  async (payload: DeleteTableOption, thunkAPI) => {
+    const { id, onSuccess, onError } = payload;
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/table?id=${id}`, { method: "DELETE" });
+      const { msg } = await response.json();
+      thunkAPI.dispatch(removeTable(id));
+      onSuccess && onSuccess();
+    } catch (err) {
+      onError && onError(err);
+    }
+  },
+);
 
 export const tableSlice = createSlice({
   name: "table",
@@ -63,10 +77,13 @@ export const tableSlice = createSlice({
         item.id === action.payload.id ? action.payload : item,
       );
     },
+    removeTable: (state, action: PayloadAction<number>) => {
+      state.items = state.items.filter((item) => item.id !== action.payload);
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setTables, addTable, editTable } = tableSlice.actions;
+export const { setTables, addTable, editTable, removeTable } = tableSlice.actions;
 
 export default tableSlice.reducer;

@@ -1,6 +1,6 @@
 import InputErrorMessage from "@/components/InputErrorMessage";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { updateTable } from "@/store/slices/tableSlice";
+import { deleteTable, updateTable } from "@/store/slices/tableSlice";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -44,10 +44,12 @@ const EditTablePage = () => {
         dispatch(updateTable({ id: tableId, name, locationId: table?.locationId, onSuccess }));
     };
 
+    const handleDeleteTable = () => dispatch(deleteTable({ id: tableId, onSuccess }));
+
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error">
+                <Button variant="contained" color="error" onClick={handleDeleteTable}>
                     Delete
                 </Button>
             </Box>

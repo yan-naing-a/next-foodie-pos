@@ -1,30 +1,20 @@
-import InputErrorMessage from "@/components/InputErrorMessage";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { updateLocation } from "@/store/slices/locationSlice";
+import { deleteLocation, updateLocation } from "@/store/slices/locationSlice";
 import { UpdateLocationOption } from "@/types/location";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-interface SelectType {
-    id: number;
-    name: string;
-}
-
 const EditLocationPage = () => {
     const router = useRouter();
     const params = useParams();
     const locationId = params && Number(params.id);
     const dispatch = useAppDispatch();
-    //error message
-    const [errorMessage, setErrorMessage] = useState<string[]>([]);
     //location
     const locations = useAppSelector((state) => state.location.items);
     const location = locations.find((item) => item.id === locationId);
 
-    // const [name, setName] = useState<string>("");
-    // const [address, setAddress] = useState<string>("");
     const [updatedLocation, setUpdatedLocation] = useState<UpdateLocationOption>();
 
     useEffect(() => {
@@ -36,23 +26,14 @@ const EditLocationPage = () => {
 
     const onSuccess = () => router.push("/backoffice/locations");
 
-    const handleUpdateLocation = () => {
-        if (!updatedLocation.name || !updatedLocation.address) {
-            setErrorMessage([]);
-            !updatedLocation.name &&
-                setErrorMessage((prevState) => [...prevState, "name field required"]);
-            !updatedLocation.address &&
-                setErrorMessage((prevState) => [...prevState, "address field required"]);
-            return;
-        }
+    const handleUpdateLocation = () => dispatch(updateLocation({ ...updatedLocation, onSuccess }));
 
-        dispatch(updateLocation({ ...updatedLocation, onSuccess }));
-    };
+    const handleDeleteLocation = () => dispatch(deleteLocation({ id: locationId, onSuccess }));
 
     return (
         <Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" color="error">
+                <Button variant="contained" color="error" onClick={handleDeleteLocation}>
                     Delete
                 </Button>
             </Box>
@@ -74,7 +55,6 @@ const EditLocationPage = () => {
                     value={updatedLocation.address}
                     onChange={(e) => setUpdatedLocation({ ...updatedLocation, address: e.target.value })}
                 />
-                {!!errorMessage.length && <InputErrorMessage errorMessage={errorMessage} />}
                 <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
                     <Button variant="outlined" onClick={() => router.push("/backoffice/locations")}>
                         Cancel

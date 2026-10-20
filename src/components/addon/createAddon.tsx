@@ -31,6 +31,7 @@ const CreateAddon = ({ open, setOpen }: Props) => {
 
     const clearInput = () => {
         setAddon(defaultAddon);
+        setSelectedAddonCategory(null);
         setErrorMessage([]);
         setOpen(false);
     };
