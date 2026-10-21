@@ -2,6 +2,7 @@ import MultiSelectInput from "@/components/selectInput/MultiSelectInput";
 import WarningAlert from "@/components/WarningAlert";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteAddonCategory, updateAddonCategory } from "@/store/slices/addonCategorySlice";
+import { setOpenSnackBar } from "@/store/slices/snackBarSlice";
 import { UpdateAddonCategoryOption } from "@/types/addonCategory";
 import { Box, Button, FormControlLabel, Switch, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -51,18 +52,27 @@ const EditAddonCategoryPage = () => {
         setCurrentSelectedMenus(selectedMenus);
     }, [addonCategory, addonCategoryId, menuAddonCategories, menus]);
 
-    const onSuccess = () => router.push("/backoffice/addon-categories");
+    const updateOnSuccess = () => {
+        dispatch(setOpenSnackBar({ message: "Update addon category successfully!", severity: "info" }));
+        router.push("/backoffice/addon-categories");
+    };
+    const deleteOnSuccess = () => {
+        dispatch(
+            setOpenSnackBar({ message: "Delete addon category successfully!", severity: "error" }),
+        );
+        router.push("/backoffice/addon-categories");
+    };
 
     // check valid data, else return and render agains
     if (!updatedAddonCategory || !currentSelectedMenus) return;
 
     const handleUpdateAddonCategory = () => {
         const menuIds = currentSelectedMenus.map((menu) => menu.id);
-        dispatch(updateAddonCategory({ ...updatedAddonCategory, menuIds, onSuccess }));
+        dispatch(updateAddonCategory({ ...updatedAddonCategory, menuIds, onSuccess: updateOnSuccess }));
     };
 
     const handleDeleteAddonCategory = () => {
-        dispatch(deleteAddonCategory({ id: addonCategoryId, onSuccess }));
+        dispatch(deleteAddonCategory({ id: addonCategoryId, onSuccess: deleteOnSuccess }));
     };
 
     return (

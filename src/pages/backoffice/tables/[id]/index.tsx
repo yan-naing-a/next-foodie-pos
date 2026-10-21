@@ -1,5 +1,6 @@
 import WarningAlert from "@/components/WarningAlert";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setOpenSnackBar } from "@/store/slices/snackBarSlice";
 import { deleteTable, updateTable } from "@/store/slices/tableSlice";
 import { UpdateTableOption } from "@/types/table";
 import { Box, Button, TextField, Typography } from "@mui/material";
@@ -32,11 +33,20 @@ const EditTablePage = () => {
     //if not valid ,return back
     if (!updatedTable) return;
 
-    const onSuccess = () => router.push("/backoffice/tables");
+    const updateOnSuccess = () => {
+        dispatch(setOpenSnackBar({ message: "Update table successfully!", severity: "info" }));
+        router.push("/backoffice/tables");
+    };
+    const deleteOnSuccess = () => {
+        dispatch(setOpenSnackBar({ message: "Delete table successfully!", severity: "error" }));
+        router.push("/backoffice/tables");
+    };
 
-    const handleUpdateMenuCategory = () => dispatch(updateTable({ ...updatedTable, onSuccess }));
+    const handleUpdateMenuCategory = () =>
+        dispatch(updateTable({ ...updatedTable, onSuccess: updateOnSuccess }));
 
-    const handleDeleteTable = () => dispatch(deleteTable({ id: tableId, onSuccess }));
+    const handleDeleteTable = () =>
+        dispatch(deleteTable({ id: tableId, onSuccess: deleteOnSuccess }));
 
     return (
         <Box>

@@ -20,7 +20,8 @@ const createAppTheme = (mode: ThemeMode) =>
         main: mode === "dark" ? "#facc15" : "#FFE194",
       },
       info: {
-        main: mode === "dark" ? "#dbeafe" : "#E8F6EF",
+        // main: mode === "dark" ? "#dbeafe" : "#E8F6EF",
+        main: "#0288D1",
       },
       success: {
         main: mode === "dark" ? "#1e293b" : "#1B9C85",

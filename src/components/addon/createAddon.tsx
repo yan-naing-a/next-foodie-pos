@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createAddon } from "@/store/slices/addonSlice";
+import { setOpenSnackBar } from "@/store/slices/snackBarSlice";
 import { CreateAddonOption } from "@/types/addon";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -33,6 +34,9 @@ const CreateAddon = ({ open, setOpen }: Props) => {
         setAddon(defaultAddon);
         setSelectedAddonCategory(null);
         setErrorMessage([]);
+
+        // for open snack bar
+        dispatch(setOpenSnackBar({ message: "Create addon successfully!" }));
         setOpen(false);
     };
 

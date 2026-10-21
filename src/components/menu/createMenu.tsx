@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createMenu } from "@/store/slices/menuSlice";
+import { setOpenSnackBar } from "@/store/slices/snackBarSlice";
 import { CreateMenuOption } from "@/types/menu";
 import {
     Box,
@@ -61,6 +62,9 @@ const CreateMenu = ({ open, setOpen }: Props) => {
         setSelectedMenuCategories([]);
         setSelectedAddonCategories([]);
         setErrorMessage([]);
+
+        // for show snack bar
+        dispatch(setOpenSnackBar({ message: "Create menu successfully!" }));
         setOpen(false);
     };
 

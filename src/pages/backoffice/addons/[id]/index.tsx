@@ -2,6 +2,7 @@ import SingleSelectInput from "@/components/selectInput/SingleSelectInput";
 import WarningAlert from "@/components/WarningAlert";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteAddon, updateAddon } from "@/store/slices/addonSlice";
+import { setOpenSnackBar } from "@/store/slices/snackBarSlice";
 import { UpdateAddonOption } from "@/types/addon";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -39,15 +40,27 @@ const EditAddonPage = () => {
     // if not valid, return back
     if (!updatedAddon || !selectedAddonCategory) return;
 
-    const onSuccess = () => router.push("/backoffice/addons");
+    const updateOnSuccess = () => {
+        dispatch(setOpenSnackBar({ message: "Update addon successfully!", severity: "info" }));
+        router.push("/backoffice/addons");
+    };
+    const deleteOnSuccess = () => {
+        dispatch(setOpenSnackBar({ message: "Delete addon successfully!", severity: "error" }));
+        router.push("/backoffice/addons");
+    };
 
     const handleUpdateAddon = () => {
         dispatch(
-            updateAddon({ ...updatedAddon, addonCategoryId: selectedAddonCategory.id, onSuccess }),
+            updateAddon({
+                ...updatedAddon,
+                addonCategoryId: selectedAddonCategory.id,
+                onSuccess: updateOnSuccess,
+            }),
         );
     };
 
-    const handleDeleteAddon = () => dispatch(deleteAddon({ id: addonId, onSuccess }));
+    const handleDeleteAddon = () =>
+        dispatch(deleteAddon({ id: addonId, onSuccess: deleteOnSuccess }));
 
     return (
         <Box>

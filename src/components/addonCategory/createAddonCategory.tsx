@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createAddonCategory } from "@/store/slices/addonCategorySlice";
+import { setOpenSnackBar } from "@/store/slices/snackBarSlice";
 import { CreateAddonCategoryOption } from "@/types/addonCategory";
 import {
     Box,
@@ -42,6 +43,9 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
         setAddonCategory(defaultAddonCategory);
         setSelectedMenus([]);
         setErrorMessage([]);
+
+        // for open snack bar
+        dispatch(setOpenSnackBar({ message: "Create Addon Category successfully!" }));
         setOpen(false);
     };
 

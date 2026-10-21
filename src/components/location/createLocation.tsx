@@ -1,5 +1,6 @@
 import { useAppDispatch } from "@/store/hooks";
 import { createLocation } from "@/store/slices/locationSlice";
+import { setOpenSnackBar } from "@/store/slices/snackBarSlice";
 import { CreateLocationOption } from "@/types/location";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -25,6 +26,9 @@ const CreateLocation = ({ open, setOpen }: Props) => {
     const clearInput = () => {
         setLocation(defaultLocation);
         setErrorMessage([]);
+
+        // for open snack bar
+        dispatch(setOpenSnackBar({ message: "Create location successfully!" }));
         setOpen(false);
     };
 

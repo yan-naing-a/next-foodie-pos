@@ -1,4 +1,5 @@
 import { useAppDispatch } from "@/store/hooks";
+import { setOpenSnackBar } from "@/store/slices/snackBarSlice";
 import { createTable } from "@/store/slices/tableSlice";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -24,6 +25,9 @@ const CreateTable = ({ open, setOpen }: Props) => {
         setName("");
         setSelectedLocationId("");
         setErrorMessage([]);
+
+        // for open snack bar
+        dispatch(setOpenSnackBar({ message: "Create table successfully!" }));
         setOpen(false);
     };
 

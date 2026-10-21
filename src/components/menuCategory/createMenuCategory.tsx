@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createMenuCategory } from "@/store/slices/menuCategorySlice";
+import { setOpenSnackBar } from "@/store/slices/snackBarSlice";
 import { CreateMenuCategoryOption } from "@/types/menuCategory";
 import { Box, Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -32,6 +33,8 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
         setMenuCategory(defaultMenuCategory);
         setErrorMessage([]);
         setSelectedMenus([]);
+
+        dispatch(setOpenSnackBar({ message: "Create menu category successfully!" }));
         setOpen(false);
     };
 

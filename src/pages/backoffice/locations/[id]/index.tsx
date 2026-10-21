@@ -1,6 +1,7 @@
 import WarningAlert from "@/components/WarningAlert";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteLocation, updateLocation } from "@/store/slices/locationSlice";
+import { setOpenSnackBar } from "@/store/slices/snackBarSlice";
 import { UpdateLocationOption } from "@/types/location";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -27,11 +28,20 @@ const EditLocationPage = () => {
     // if not valid, return back
     if (!updatedLocation) return;
 
-    const onSuccess = () => router.push("/backoffice/locations");
+    const updateOnSuccess = () => {
+        dispatch(setOpenSnackBar({ message: "Update location successfully!", severity: "info" }));
+        router.push("/backoffice/locations");
+    };
+    const deleteOnSuccess = () => {
+        dispatch(setOpenSnackBar({ message: "Delete location successfully!", severity: "error" }));
+        router.push("/backoffice/locations");
+    };
 
-    const handleUpdateLocation = () => dispatch(updateLocation({ ...updatedLocation, onSuccess }));
+    const handleUpdateLocation = () =>
+        dispatch(updateLocation({ ...updatedLocation, onSuccess: updateOnSuccess }));
 
-    const handleDeleteLocation = () => dispatch(deleteLocation({ id: locationId, onSuccess }));
+    const handleDeleteLocation = () =>
+        dispatch(deleteLocation({ id: locationId, onSuccess: deleteOnSuccess }));
 
     return (
         <Box>

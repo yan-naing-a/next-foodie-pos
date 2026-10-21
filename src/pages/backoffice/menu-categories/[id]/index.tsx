@@ -2,6 +2,7 @@ import MultipleSelectInput from "@/components/selectInput/MultiSelectInput";
 import WarningAlert from "@/components/WarningAlert";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteMenuCategory, updateMenuCategory } from "@/store/slices/menuCategorySlice";
+import { setOpenSnackBar } from "@/store/slices/snackBarSlice";
 import { UpdateMenuCategoryOption } from "@/types/menuCategory";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -46,15 +47,22 @@ const EditMenuCategoryPage = () => {
     // check valid data, else return and render agains
     if (!updatedMenuCategory) return;
 
-    const onSuccess = () => router.push("/backoffice/menu-categories");
+    const updateOnSuccess = () => {
+        dispatch(setOpenSnackBar({ message: "Update menu category successfully!", severity: "info" }));
+        router.push("/backoffice/menu-categories");
+    };
+    const deleteOnSuccess = () => {
+        dispatch(setOpenSnackBar({ message: "Delete menu category successfully!", severity: "error" }));
+        router.push("/backoffice/menu-categories");
+    };
 
     const handleUpdateMenuCategory = () => {
         const menuIds = currentSelectedMenus?.map((menu) => menu.id);
-        dispatch(updateMenuCategory({ ...updatedMenuCategory, menuIds, onSuccess }));
+        dispatch(updateMenuCategory({ ...updatedMenuCategory, menuIds, onSuccess: updateOnSuccess }));
     };
 
     const handleDeleteMenuCategory = () => {
-        dispatch(deleteMenuCategory({ id: menuCategoryId, onSuccess }));
+        dispatch(deleteMenuCategory({ id: menuCategoryId, onSuccess: deleteOnSuccess }));
     };
 
     return (

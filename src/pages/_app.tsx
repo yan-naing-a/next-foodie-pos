@@ -1,3 +1,4 @@
+import AppSanckBar from "@/components/AppSnackBar";
 import Layout from "@/components/layout";
 import { store } from "@/store";
 import { useAppSelector } from "@/store/hooks";
@@ -15,6 +16,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <AppTheme>
           <Layout>
             <Component {...pageProps} />
+            <AppSanckBar />
           </Layout>
         </AppTheme>
       </Provider>

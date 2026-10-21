@@ -8,6 +8,7 @@ import menuAddonCategoryReducer from "./slices/menuAddonCategorySlice";
 import menuCategoryMenuReducer from "./slices/menuCategoryMenuSlice";
 import menuCategoryReducer from "./slices/menuCategorySlice";
 import menuReducer from "./slices/menuSlice";
+import snackBarReducer from "./slices/snackBarSlice";
 import tableReducer from "./slices/tableSlice";
 import themeReducer from "./slices/themeSlice";
 
@@ -28,6 +29,8 @@ export const store = configureStore({
     menuAddonCategory: menuAddonCategoryReducer,
     // theme mode
     theme: themeReducer,
+    // snack bar
+    snackBar: snackBarReducer,
   },
 });
 
