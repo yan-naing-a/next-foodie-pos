@@ -34,10 +34,13 @@ const CreateAddon = ({ open, setOpen }: Props) => {
         setAddon(defaultAddon);
         setSelectedAddonCategory(null);
         setErrorMessage([]);
+        setOpen(false);
+    };
 
+    const onSuccess = () => {
         // for open snack bar
         dispatch(setOpenSnackBar({ message: "Create addon successfully!" }));
-        setOpen(false);
+        clearInput();
     };
 
     // if not valid ,return back
@@ -54,7 +57,7 @@ const CreateAddon = ({ open, setOpen }: Props) => {
             return;
         }
         const addonCategoryId = selectedAddonCategory.id;
-        dispatch(createAddon({ ...addon, addonCategoryId, onSuccess: () => clearInput() }));
+        dispatch(createAddon({ ...addon, addonCategoryId, onSuccess }));
     };
 
     return (

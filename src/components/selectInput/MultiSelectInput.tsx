@@ -1,6 +1,6 @@
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import { ListItemText, Typography } from "@mui/material";
+import { Box, Chip, ListItemText, Typography } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -40,12 +40,15 @@ export default function MultipleSelectInput({ items, inputLabel, values, setValu
                     label={inputLabel}
                     onChange={(evt) => handleChange(evt.target.value as number[])}
                     input={<OutlinedInput label={inputLabel} />}
-                    renderValue={(selectedIds) => {
-                        return selectedIds
-                            .map((selectedId) => items.find((item) => item.id === selectedId))
-                            .map((selectedItem) => selectedItem?.name)
-                            .join(", ");
-                    }}
+                    renderValue={(selectedIds) => (
+                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                            {selectedIds
+                                .map((selectedId) => items.find((item) => item.id === selectedId))
+                                .map((value) => (
+                                    <Chip key={value?.id} label={value?.name} />
+                                ))}
+                        </Box>
+                    )}
                     MenuProps={{
                         slotProps: {
                             paper: {

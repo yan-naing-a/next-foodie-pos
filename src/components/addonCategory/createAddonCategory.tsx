@@ -43,10 +43,13 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
         setAddonCategory(defaultAddonCategory);
         setSelectedMenus([]);
         setErrorMessage([]);
+        setOpen(false);
+    };
 
+    const onSuccess = () => {
         // for open snack bar
         dispatch(setOpenSnackBar({ message: "Create Addon Category successfully!" }));
-        setOpen(false);
+        clearInput();
     };
 
     const handleCreateAddonCategory = () => {
@@ -58,7 +61,7 @@ const CreateAddonCategory = ({ open, setOpen }: Props) => {
             return;
         }
         const menuIds = selectedMenus.map((selectedMenu) => selectedMenu.id);
-        dispatch(createAddonCategory({ ...addonCategory, menuIds, onSuccess: () => clearInput() }));
+        dispatch(createAddonCategory({ ...addonCategory, menuIds, onSuccess }));
     };
 
     if (!menus.length) return;

@@ -62,10 +62,13 @@ const CreateMenu = ({ open, setOpen }: Props) => {
         setSelectedMenuCategories([]);
         setSelectedAddonCategories([]);
         setErrorMessage([]);
+        setOpen(false);
+    };
 
+    const onSuccess = () => {
         // for show snack bar
         dispatch(setOpenSnackBar({ message: "Create menu successfully!" }));
-        setOpen(false);
+        clearInput();
     };
 
     const handleCreateMenu = () => {
@@ -78,7 +81,7 @@ const CreateMenu = ({ open, setOpen }: Props) => {
                 setErrorMessage((prevState) => [...prevState, "menu categories field required"]);
             return;
         }
-        dispatch(createMenu({ ...newMenu, onSuccess: () => clearInput() }));
+        dispatch(createMenu({ ...newMenu, onSuccess }));
     };
 
     if (!menuCategories.length) return;

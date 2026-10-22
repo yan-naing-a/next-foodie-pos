@@ -25,10 +25,13 @@ const CreateTable = ({ open, setOpen }: Props) => {
         setName("");
         setSelectedLocationId("");
         setErrorMessage([]);
+        setOpen(false);
+    };
 
+    const onSuccess = () => {
         // for open snack bar
         dispatch(setOpenSnackBar({ message: "Create table successfully!" }));
-        setOpen(false);
+        clearInput();
     };
 
     const handleCreateTable = () => {
@@ -39,9 +42,7 @@ const CreateTable = ({ open, setOpen }: Props) => {
                 setErrorMessage((prevState) => [...prevState, "select location on setting first"]);
             return;
         }
-        dispatch(
-            createTable({ name, locationId: Number(selectedLocationId), onSuccess: () => clearInput() }),
-        );
+        dispatch(createTable({ name, locationId: Number(selectedLocationId), onSuccess }));
     };
 
     return (

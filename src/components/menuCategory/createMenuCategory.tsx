@@ -33,9 +33,12 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
         setMenuCategory(defaultMenuCategory);
         setErrorMessage([]);
         setSelectedMenus([]);
-
-        dispatch(setOpenSnackBar({ message: "Create menu category successfully!" }));
         setOpen(false);
+    };
+
+    const onSuccess = () => {
+        dispatch(setOpenSnackBar({ message: "Create menu category successfully!" }));
+        clearInput();
     };
 
     const handleCreateMenuCategory = () => {
@@ -45,7 +48,7 @@ const CreateMenuCategory = ({ open, setOpen }: Props) => {
             return;
         }
         const menuIds = selectedMenus?.map((selectedMenu) => selectedMenu.id);
-        dispatch(createMenuCategory({ ...menuCategory, menuIds, onSuccess: () => clearInput() }));
+        dispatch(createMenuCategory({ ...menuCategory, menuIds, onSuccess }));
     };
 
     //

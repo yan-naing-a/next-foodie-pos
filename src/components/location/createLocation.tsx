@@ -26,10 +26,13 @@ const CreateLocation = ({ open, setOpen }: Props) => {
     const clearInput = () => {
         setLocation(defaultLocation);
         setErrorMessage([]);
+        setOpen(false);
+    };
 
+    const onSuccess = () => {
         // for open snack bar
         dispatch(setOpenSnackBar({ message: "Create location successfully!" }));
-        setOpen(false);
+        clearInput();
     };
 
     const handleCreateLocation = () => {
@@ -39,7 +42,7 @@ const CreateLocation = ({ open, setOpen }: Props) => {
             !location.address && setErrorMessage((prevState) => [...prevState, "address field required"]);
             return;
         }
-        dispatch(createLocation({ ...location, onSuccess: () => clearInput() }));
+        dispatch(createLocation({ ...location, onSuccess }));
     };
 
     return (
