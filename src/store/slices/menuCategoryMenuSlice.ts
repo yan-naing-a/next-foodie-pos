@@ -1,9 +1,11 @@
 import {
   EditMenuCategoryMenu,
+  EditMenuCategoryMenuPayload,
   MenuCategoryMenuState,
   RemoveMenuCategoryMenu,
 } from "@/types/menuCategoryMenu";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import config from "@/utils/config";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { MenuCategoryMenu } from "../../../generated/prisma/client";
 
 const initialState: MenuCategoryMenuState = {
@@ -11,6 +13,24 @@ const initialState: MenuCategoryMenuState = {
   loading: false,
   error: null,
 };
+export const updateMenuCategoryMenu = createAsyncThunk(
+  "menuCategory/updateMenuCategoryMenu",
+  async (payload: EditMenuCategoryMenuPayload, thunkAPI) => {
+    const { items, onSuccess, onError } = payload;
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/menu-category-menu`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+      });
+      const { msg, data } = await response.json();
+      thunkAPI.dispatch(addMenuCategoryMenus(data));
+      onSuccess && onSuccess();
+    } catch (err) {
+      onError && onError(err);
+    }
+  },
+);
 
 export const menuCategoryMenuSlice = createSlice({
   name: "menuCategoryMenu",

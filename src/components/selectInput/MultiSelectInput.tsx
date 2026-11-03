@@ -7,7 +7,6 @@ import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
 import { Dispatch, SetStateAction } from "react";
-import { AddonCategory, Menu, MenuCategory } from "../../../generated/prisma/client";
 
 interface SelectType {
     id: number;
@@ -15,7 +14,7 @@ interface SelectType {
 }
 
 interface Props {
-    items: Menu[] | MenuCategory[] | AddonCategory[];
+    items: SelectType[];
     inputLabel: string;
     values: SelectType[] | null;
     setValues: Dispatch<SetStateAction<SelectType[] | null>>;

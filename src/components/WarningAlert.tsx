@@ -12,19 +12,21 @@ import {
 } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from "react";
 import InputErrorMessage from "./InputErrorMessage";
+import RecommendingAlert from "./RecommendingAlert";
 
-const useIsomorphicLayoutEffect =
-    typeof window === "undefined" ? useEffect : useLayoutEffect;
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 interface Props {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
     label: string;
     handleDeleteData: () => void;
+    recommendingAlertProps?: {};
 }
 
 const WarningAlert = ({ open, setOpen, label, handleDeleteData }: Props) => {
     const [inputWord, setInputWord] = useState<string>("");
+    const [openRecommending, setOpenRecommending] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string[]>();
     const triggerRef = useRef<HTMLElement | null>(null);
 
@@ -96,7 +98,6 @@ const WarningAlert = ({ open, setOpen, label, handleDeleteData }: Props) => {
                 />
                 {!!errorMessage?.length && <InputErrorMessage errorMessage={errorMessage} />}
             </Box>
-
             <DialogActions sx={{ p: 3 }}>
                 <Button onClick={handleClose} autoFocus>
                     Cancel
@@ -105,6 +106,7 @@ const WarningAlert = ({ open, setOpen, label, handleDeleteData }: Props) => {
                     Delete
                 </Button>
             </DialogActions>
+            <RecommendingAlert open={openRecommending} setOpen={setOpenRecommending} />
         </Dialog>
     );
 };
